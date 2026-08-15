@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>ज्ञान चौपाल — Bihar Board AI Study Assistant</title>
+<meta name="description" content="Bihar Board Class 1-12 के लिए AI Study Assistant। Class चुनें → Subject चुनें → सवाल पूछें → AI जवाब दे।">
+<style>
+:root{
+  --bg:#eefbf2; --surface:#ffffff; --surface-2:#f4faf6;
+  --text:#0f172a; --text-soft:#475569; --text-mute:#94a3b8;
+  --border:#d1e7d8; --border-2:#a7d4b4;
+  --brand:#1f8f43; --brand-2:#16a34a; --brand-soft:#dcfce7;
+  --accent:#ea580c; --accent-soft:#ffedd5;
+  --danger:#dc2626; --danger-soft:#fee2e2;
+  --bubble-user:#1f8f43; --bubble-user-text:#ffffff;
+  --bubble-ai:#ffffff; --bubble-ai-text:#0f172a;
+  --shadow:0 4px 14px rgba(31,143,67,.10); --shadow-lg:0 12px 32px rgba(31,143,67,.16);
+  --radius:20px; --radius-sm:12px;
+  --maxw:920px;
+}
+[data-theme="dark"]{
+  --bg:#0b1a12; --surface:#13241a; --surface-2:#0f1d15;
+  --text:#e6f0e9; --text-soft:#aab8cc; --text-mute:#64748b;
+  --border:#1e3a28; --border-2:#2e5238;
+  --brand:#22c55e; --brand-2:#4ade80; --brand-soft:#0f2e1c;
+  --accent:#fb923c; --accent-soft:#3a1e0c;
+  --danger:#f87171; --danger-soft:#3a1212;
+  --bubble-user:#16a34a; --bubble-user-text:#ffffff;
+  --bubble-ai:#1a2e20; --bubble-ai-text:#e6f0e9;
+  --shadow:0 4px 14px rgba(0,0,0,.4); --shadow-lg:0 12px 32px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Inter","Segoe UI",system-ui,-apple-system,"Noto Sans Devanagari",Arial,sans-serif;
+  background:var(--bg); color:var(--text);
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
+  min-height:100vh;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px 130px;}
+
+header.app{
+  position:sticky; top:0; z-index:50;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.header-row{
+  max-width:var(--maxw); margin:0 auto; padding:12px 16px;
+  display:flex; align-items:center; gap:12px;
+}
+.logo{
+  width:42px;height:42px;border-radius:12px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  display:grid;place-items:center; color:#fff; font-weight:800;
+  font-size:22px; box-shadow:var(--shadow);
+}
+.brand-text h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-.2px}
+.brand-text p{font-size:11.5px;margin:0;color:var(--text-soft);font-weight:600}
+.spacer{flex:1}
+.icon-btn{
+  background:var(--surface-2); border:1px solid var(--border);
+  width:42px;height:42px;border-radius:12px; cursor:pointer;
+  display:grid;place-items:center; color:var(--text);
+  font-size:18px; transition:.2s; flex:0 0 auto;
+}
+.icon-btn:hover{background:var(--surface);border-color:var(--border-2);transform:translateY(-1px)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--brand-2);display:inline-block;margin-right:5px;box-shadow:0 0 0 2px var(--surface)}
+
+.hero{padding:26px 0 6px;text-align:center}
+.hero .tagline{
+  display:inline-block; font-size:13px; font-weight:700;
+  color:var(--brand); background:var(--brand-soft);
+  padding:6px 14px; border-radius:999px; margin-bottom:12px;
+}
+.hero h2{font-size:clamp(22px,5vw,30px);margin:0 0 6px;font-weight:800;line-height:1.25}
+.hero p.sub{margin:0;color:var(--text-soft);font-size:14.5px}
+.hero .ready{margin-top:10px;font-size:12px;color:var(--brand);font-weight:700}
+
+.card{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:18px; margin-top:16px;
+  box-shadow:var(--shadow);
+}
+.card h3{margin:0 0 4px;font-size:16px;font-weight:800}
+.card .hint{color:var(--text-soft);font-size:12.5px;margin:0 0 14px}
+
+/* ===== AI Hero Banner (prominent) ===== */
+.ai-hero{
+  margin-top:18px;
+  background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+  color:#fff; border-radius:var(--radius);
+  padding:26px 22px; box-shadow:var(--shadow-lg);
+  text-align:center; position:relative; overflow:hidden;
+}
+.ai-hero::after{
+  content:""; position:absolute; right:-30px; top:-30px;
+  width:140px; height:140px; border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+.ai-hero .ai-emoji{font-size:38px;display:block;margin-bottom:8px}
+.ai-hero h3{font-size:22px;font-weight:800;margin:0 0 6px;color:#fff}
+.ai-hero p{margin:0 0 16px;opacity:.95;font-size:14.5px;font-weight:500}
+.ai-hero .ai-cta{
+  display:inline-block; background:#fff; color:var(--brand);
+  border:none; border-radius:14px; padding:13px 28px;
+  font-weight:800; font-size:15px; cursor:pointer;
+  font-family:inherit; transition:.2s; box-shadow:0 6px 18px rgba(0,0,0,.15);
+}
+.ai-hero .ai-cta:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.22)}
+
+/* ===== Section title ===== */
+.section-title{
+  display:flex; align-items:center; gap:10px;
+  margin:24px 0 2px; padding:0 4px;
+}
+.section-title .si{
+  width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  background:var(--brand-soft); color:var(--brand);
+  display:grid;place-items:center;font-size:18px;
+}
+.section-title h2{font-size:18px;font-weight:800;margin:0}
+.section-title .st-sub{font-size:12px;color:var(--text-soft);font-weight:600;margin-left:auto}
+
+.opts{display:grid;gap:10px}
+.opts.cls{grid-template-columns:repeat(6,1fr)}
+.opts.subj{grid-template-columns:repeat(4,1fr)}
+@media(max-width:560px){
+  .opts.cls{grid-template-columns:repeat(3,1fr)}
+  .opts.subj{grid-template-columns:repeat(2,1fr)}
+}
+.opt{
+  background:var(--surface-2); border:2px solid var(--border);
+  border-radius:var(--radius-sm); padding:12px 8px; cursor:pointer;
+  text-align:center; font-weight:700; font-size:14px;
+  transition:.18s; color:var(--text);
+}
+.opt:hover{border-color:var(--border-2);transform:translateY(-2px)}
+.opt.active{
+  background:var(--brand); border-color:var(--brand); color:#fff;
+  box-shadow:0 6px 16px color-mix(in srgb,var(--brand) 40%,transparent);
+}
+
+.step{display:flex;align-items:center;gap:10px}
+.step .num{
+  width:26px;height:26px;border-radius:50%;flex:0 0 auto;
+  background:var(--brand);color:#fff;font-weight:800;font-size:13px;
+  display:grid;place-items:center;
+}
+.step h3{margin:0}
+
+#chatSection{display:none}
+#chatSection.show{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.chat-box{margin-top:16px; display:flex; flex-direction:column; gap:14px;}
+.msg{display:flex;gap:10px;max-width:88%;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg .av{
+  width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  display:grid;place-items:center;font-size:16px;
+}
+.msg.user .av{background:var(--bubble-user);color:#fff}
+.msg.ai .av{background:var(--brand-soft);color:var(--brand)}
+.bubble{
+  padding:12px 14px; border-radius:14px; font-size:14.5px;
+  word-wrap:break-word; overflow-wrap:anywhere;
+}
+.msg.user .bubble{background:var(--bubble-user);color:var(--bubble-user-text);border-bottom-right-radius:4px}
+.msg.ai .bubble{background:var(--bubble-ai);color:var(--bubble-ai-text);border:1px solid var(--border);border-bottom-left-radius:4px}
+.bubble p{margin:.3em 0}
+.bubble p:first-child{margin-top:0}
+.bubble p:last-child{margin-bottom:0}
+.bubble code{background:rgba(0,0,0,.08);padding:1px 6px;border-radius:6px;font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;}
+[data-theme="dark"] .bubble code{background:rgba(255,255,255,.1)}
+.bubble pre{background:rgba(0,0,0,.06);padding:12px;border-radius:10px;overflow-x:auto;margin:.5em 0;font-size:13px;}
+[data-theme="dark"] .bubble pre{background:rgba(0,0,0,.3)}
+.bubble strong{font-weight:800}
+.bubble ul,.bubble ol{margin:.4em 0;padding-left:1.3em}
+.bubble li{margin:.2em 0}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;padding-left:44px}
+.act{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:9px;padding:5px 10px;font-size:12px;cursor:pointer;
+  color:var(--text-soft);transition:.18s;display:flex;align-items:center;gap:4px;
+}
+.act:hover{background:var(--surface);border-color:var(--brand);color:var(--brand)}
+
+.typing{display:inline-flex;gap:4px;align-items:center;padding:4px 0}
+.typing span{width:8px;height:8px;border-radius:50%;background:var(--text-mute);animation:blink 1.4s infinite both}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+.composer{
+  position:fixed; bottom:0; left:0; right:0; z-index:60;
+  background:color-mix(in srgb,var(--surface) 92%,transparent);
+  backdrop-filter:blur(10px);
+  border-top:1px solid var(--border);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+}
+.composer-row{max-width:var(--maxw);margin:0 auto;display:flex;gap:10px;align-items:flex-end;}
+#qInput{
+  flex:1; resize:none; min-height:48px; max-height:180px;
+  background:var(--surface-2); border:1.5px solid var(--border);
+  border-radius:14px; padding:13px 14px; color:var(--text); font-size:15px;
+  font-family:inherit; line-height:1.5; transition:.2s;
+}
+#qInput:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+#qInput:disabled{opacity:.5}
+#askBtn,#newBtn{
+  border:none;border-radius:14px;padding:13px 18px;font-weight:800;font-size:14.5px;cursor:pointer;
+  font-family:inherit;transition:.18s;display:flex;align-items:center;gap:6px;flex:0 0 auto;
+}
+#askBtn{background:var(--brand);color:#fff}
+#askBtn:hover{background:var(--brand-2);transform:translateY(-1px)}
+#askBtn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+#newBtn{background:var(--surface-2);color:var(--text);border:1.5px solid var(--border)}
+#newBtn:hover{border-color:var(--brand);color:var(--brand)}
+.composer-meta{max-width:var(--maxw);margin:6px auto 0;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--text-mute)}
+.composer-meta .ctx{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:2px 9px;font-weight:700;color:var(--brand)}
+
+.err-banner{
+  background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger);
+  padding:12px 14px;border-radius:12px;font-size:13.5px;font-weight:600;
+  display:none;align-items:center;gap:8px;
+}
+.err-banner.show{display:flex}
+
+footer{padding:30px 0 10px;color:var(--text-mute);font-size:11.5px;position:relative;z-index:0}
+
+/* History Sidebar */
+.sidebar-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;
+  display:none;opacity:0;transition:opacity .3s;
+}
+.sidebar-bg.show{display:block;opacity:1}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:300px;max-width:85vw;
+  background:var(--surface);z-index:95;
+  transform:translateX(-100%);transition:transform .3s ease;
+  display:flex;flex-direction:column;
+  box-shadow:4px 0 24px rgba(0,0,0,.15);
+}
+.sidebar.show{transform:translateX(0)}
+.sidebar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.sidebar-header h3{margin:0;font-size:16px;font-weight:800}
+.sidebar-close{
+  background:none;border:none;font-size:22px;cursor:pointer;
+  color:var(--text-soft);padding:4px 8px;border-radius:8px;transition:.2s;
+}
+.sidebar-close:hover{background:var(--surface-2)}
+.sidebar-newbtn{
+  margin:12px 16px 8px;padding:10px;border:none;border-radius:10px;
+  background:var(--brand);color:#fff;font-weight:800;font-size:14px;
+  cursor:pointer;font-family:inherit;transition:.2s;
+}
+.sidebar-newbtn:hover{background:var(--brand-2)}
+.sidebar-list{
+  flex:1;overflow-y:auto;padding:8px 12px;
+}
+.sidebar-list::-webkit-scrollbar{width:6px}
+.sidebar-list::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:6px}
+.chat-item{
+  padding:10px 12px;border-radius:10px;cursor:pointer;
+  margin-bottom:6px;transition:.15s;border:1px solid transparent;
+}
+.chat-item:hover{background:var(--surface-2)}
+.chat-item.active{background:var(--brand-soft);border-color:var(--brand)}
+.chat-item-title{
+  font-size:13px;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.chat-item-meta{
+  font-size:11px;color:var(--text-mute);margin-top:3px;
+  display:flex;align-items:center;gap:6px;
+}
+.chat-item-del{
+  background:none;border:none;cursor:pointer;font-size:14px;
+  color:var(--text-mute);padding:2px 4px;border-radius:6px;transition:.2s;
+  margin-left:auto;opacity:0;
+}
+.chat-item:hover .chat-item-del{opacity:1}
+.chat-item-del:hover{color:var(--danger);background:var(--danger-soft)}
+.sidebar-empty{
+  text-align:center;padding:40px 16px;color:var(--text-mute);font-size:13px;
+}
+
+/* ===================== TODAY'S TARGET / TO-DO ===================== */
+.todo-progress-top{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px; flex-wrap:wrap; gap:8px;
+}
+.todo-count{font-size:14px;font-weight:800;color:var(--brand)}
+.todo-pct{font-size:13px;font-weight:700;color:var(--text-soft)}
+.progress-bar{
+  width:100%; height:10px; background:var(--surface-2);
+  border-radius:999px; overflow:hidden; margin-bottom:14px;
+  border:1px solid var(--border);
+}
+.progress-bar .fill{
+  height:100%; width:0%;
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));
+  border-radius:999px; transition:width .5s ease;
+}
+
+.todo-add-row{display:flex;gap:8px;margin-bottom:14px}
+.todo-add-row input{
+  flex:1; padding:12px 14px; border:1.5px solid var(--border);
+  border-radius:12px; background:var(--surface-2); color:var(--text);
+  font-size:14.5px; font-family:inherit; transition:.2s;
+}
+.todo-add-row input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.todo-add-btn{
+  background:var(--brand); color:#fff; border:none;
+  border-radius:12px; padding:0 18px; font-size:20px;
+  font-weight:800; cursor:pointer; flex:0 0 auto;
+  transition:.18s; font-family:inherit;
+}
+.todo-add-btn:hover{background:var(--brand-2);transform:translateY(-1px)}
+
+.todo-list{display:flex;flex-direction:column;gap:8px}
+.todo-item{
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:12px; padding:10px 12px;
+  transition:.18s; animation:slideIn .25s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.todo-item:hover{border-color:var(--border-2)}
+.todo-item.done{opacity:.6}
+.todo-item.done .todo-text{text-decoration:line-through;color:var(--text-mute)}
+
+.todo-check{
+  width:24px;height:24px;border-radius:7px;border:2px solid var(--border-2);
+  cursor:pointer; flex:0 0 auto; display:grid;place-items:center;
+  transition:.18s; background:var(--surface);
+}
+.todo-check:hover{border-color:var(--brand)}
+.todo-item.done .todo-check{background:var(--brand);border-color:var(--brand);color:#fff}
+.todo-check .tick{font-size:14px;display:none}
+.todo-item.done .todo-check .tick{display:block}
+
+.todo-text{flex:1;font-size:14.5px;font-weight:600;word-break:break-word}
+.todo-edit-input{
+  flex:1; padding:6px 8px; border:1.5px solid var(--brand);
+  border-radius:8px; background:var(--surface); color:var(--text);
+  font-size:14.5px; font-family:inherit;
+}
+.todo-actions{display:flex;gap:4px;flex:0 0 auto}
+.todo-act{
+  background:none; border:none; cursor:pointer;
+  width:30px;height:30px;border-radius:8px;
+  display:grid;place-items:center;font-size:14px;
+  color:var(--text-mute);transition:.18s;
+}
+.todo-act:hover{background:var(--surface);color:var(--brand)}
+.todo-act.del:hover{color:var(--danger);background:var(--danger-soft)}
+
+.todo-empty{
+  text-align:center; padding:24px 12px; color:var(--text-mute);
+  font-size:13.5px; border:1.5px dashed var(--border-2); border-radius:12px;
+}
+
+/* ===================== MY PROGRESS ===================== */
+.progress-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:480px){.progress-grid{grid-template-columns:1fr}}
+.stat-card{
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:14px; padding:14px; text-align:center;
+}
+.stat-card .si{font-size:24px;display:block;margin-bottom:6px}
+.stat-card .sv{font-size:22px;font-weight:800;color:var(--brand)}
+.stat-card .sl{font-size:11.5px;color:var(--text-soft);font-weight:600;margin-top:2px}
+
+.streak-card{
+  background:linear-gradient(135deg,var(--accent),#f97316); color:#fff;
+  border-radius:14px; padding:14px; text-align:center; border:none;
+}
+.streak-card .si{font-size:24px;display:block;margin-bottom:6px}
+.streak-card .sv{font-size:22px;font-weight:800}
+.streak-card .sl{font-size:11.5px;opacity:.95;font-weight:600;margin-top:2px}
+
+.weekly-title{font-size:13px;font-weight:700;color:var(--text-soft);margin:4px 0 10px}
+.weekly-bars{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;height:110px}
+.wbar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.wbar{
+  width:100%; max-width:28px; border-radius:7px 7px 4px 4px;
+  background:linear-gradient(180deg,var(--brand-2),var(--brand));
+  min-height:3px; transition:height .5s ease;
+  box-shadow:0 2px 6px rgba(31,143,67,.2);
+}
+.wbar-col.today .wbar{background:linear-gradient(180deg,var(--accent),#f97316)}
+.wbar-lbl{font-size:10px;font-weight:700;color:var(--text-mute)}
+.wbar-col.today .wbar-lbl{color:var(--accent)}
+.wbar-val{font-size:9.5px;font-weight:700;color:var(--text-soft);min-height:12px}
+
+/* ===================== MOBILE BOTTOM NAV ===================== */
+.bottom-nav{
+  position:fixed; bottom:0; left:0; right:0; z-index:55;
+  background:color-mix(in srgb,var(--surface) 95%,transparent);
+  backdrop-filter:blur(12px); border-top:1px solid var(--border);
+  display:none; justify-content:space-around; align-items:center;
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+@media(max-width:720px){ .bottom-nav{display:flex} .composer{bottom:54px} .wrap{padding-bottom:170px} }
+.bn-item{
+  background:none;border:none;cursor:pointer;flex:1;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 2px; color:var(--text-mute); transition:.18s;
+  font-family:inherit;
+}
+.bn-item .bi{font-size:18px;line-height:1}
+.bn-item .bt{font-size:9.5px;font-weight:700}
+.bn-item.active{color:var(--brand)}
+.bn-item:active{transform:scale(.92)}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="header-row">
+    <div class="logo">ज्ञा</div>
+    <div class="brand-text">
+      <h1>ज्ञान चौपाल</h1>
+      <p>Bihar Board AI Study Assistant</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="historyBtn" title="चैट हिस्ट्री" aria-label="चैट हिस्ट्री">☰</button>
+    <button class="icon-btn" id="themeBtn" title="Dark Mode" aria-label="Dark Mode">🌙</button>
+  </div>
+</header>
+
+<!-- History Sidebar -->
+<div class="sidebar-bg" id="sidebarBg"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3>चैट हिस्ट्री</h3>
+    <button class="sidebar-close" id="sidebarClose">✕</button>
+  </div>
+  <button class="sidebar-newbtn" id="sidebarNewBtn">+ नई चैट शुरू करें</button>
+  <div class="sidebar-list" id="sidebarList"></div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="tagline">"पढ़ाई का अपना AI साथी"</span>
+    <h2>Bihar Board के लिए AI Study Assistant</h2>
+    <p class="sub">Class चुनें → Subject चुनें → सवाल पूछें → AI जवाब दे</p>
+    <div class="ready"><span class="status-dot"></span> AI तैयार है — बिना किसी लॉगिन के चलता है</div>
+  </div>
+
+  <!-- ===== AI Hero Banner ===== -->
+  <div class="ai-hero">
+    <span class="ai-emoji">🤖</span>
+    <h3>Ask Gyan Chaupal</h3>
+    <p>अपना सवाल पूछें और आसान भाषा में समझें।</p>
+    <button class="ai-cta" id="aiScrollBtn">Ask AI →</button>
+  </div>
+
+  <!-- ===== TODAY'S TARGET ===== -->
+  <div class="section-title">
+    <div class="si">🎯</div>
+    <h2>आज का Target</h2>
+    <span class="st-sub" id="todoDateLabel"></span>
+  </div>
+  <div class="card" id="targetCard">
+    <div class="todo-progress-top">
+      <span class="todo-count" id="todoCount">Today's Progress: 0 / 0</span>
+      <span class="todo-pct" id="todoPct">0% Completed</span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="todoFill"></div></div>
+    <div class="todo-add-row">
+      <input type="text" id="todoInput" placeholder="नया task लिखें (जैसे: Physics Chapter 1 पढ़ना)" maxlength="120">
+      <button class="todo-add-btn" id="todoAddBtn" title="Task Add करें">+</button>
+    </div>
+    <div class="todo-list" id="todoList"></div>
+  </div>
+
+  <!-- ===== MY PROGRESS ===== -->
+  <div class="section-title">
+    <div class="si">📊</div>
+    <h2>My Progress</h2>
+  </div>
+  <div class="card" id="progressCard">
+    <div class="progress-grid">
+      <div class="stat-card">
+        <span class="si">✅</span>
+        <div class="sv" id="progCompleted">0 / 0</div>
+        <div class="sl">Today's Tasks Completed</div>
+      </div>
+      <div class="stat-card">
+        <span class="si">📈</span>
+        <div class="sv" id="progPercent">0%</div>
+        <div class="sl">Progress</div>
+      </div>
+      <div class="stat-card">
+        <span class="si">📚</span>
+        <div class="sv" id="progTotal">0</div>
+        <div class="sl">Total Completed Tasks</div>
+      </div>
+      <div class="streak-card">
+        <span class="si">🔥</span>
+        <div class="sv" id="progStreak">0 Days</div>
+        <div class="sl">Study Streak</div>
+      </div>
+    </div>
+    <div class="weekly-title">Weekly Progress (completed tasks per day)</div>
+    <div class="weekly-bars" id="weeklyBars"></div>
+  </div>
+
+  <div class="card" id="classCard">
+    <div class="step"><div class="num">1</div><h3>अपनी कक्षा चुनें</h3></div>
+    <p class="hint">आप किस कक्षा में पढ़ते हैं?</p>
+    <div class="opts cls" id="classList"></div>
+  </div>
+
+  <div class="card" id="subjectCard" style="display:none">
+    <div class="step"><div class="num">2</div><h3>अपना विषय चुनें</h3></div>
+    <p class="hint" id="subjectHint">कक्षा के अनुसार विषय चुनें</p>
+    <div class="opts subj" id="subjectList"></div>
+  </div>
+
+  <div class="card" id="askCard" style="display:none">
+    <div class="step"><div class="num">3</div><h3>अपना सवाल पूछें</h3></div>
+    <p class="hint">Hindi, English या Hinglish में लिख सकते हैं</p>
+    <div class="err-banner" id="errBanner"></div>
+  </div>
+
+  <section id="chatSection">
+    <div class="chat-box" id="chatBox"></div>
+  </section>
+
+  <footer>
+    ज्ञान चौपाल • Bihar Board AI Study Assistant • पढ़ाई का अपना AI साथी
+  </footer>
+</div>
+
+<div class="composer" id="composer" style="display:none">
+  <div class="composer-row">
+    <textarea id="qInput" placeholder="यहाँ अपना सवाल लिखें..." rows="1" aria-label="सवाल"></textarea>
+    <button id="askBtn">पूछें</button>
+    <button id="newBtn" title="नई चैट">नई चैट</button>
+  </div>
+  <div class="composer-meta">
+    <div class="ctx">
+      <span class="chip" id="ctxClass">Class —</span>
+      <span class="chip" id="ctxSubject">Subject —</span>
+    </div>
+    <span>Google Gemini AI</span>
+  </div>
+</div>
+
+<!-- ===== Mobile Bottom Navigation ===== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bn-item active" data-target="hero">
+    <span class="bi">🏠</span><span class="bt">Home</span>
+  </button>
+  <button class="bn-item" data-target="classCard">
+    <span class="bi">🤖</span><span class="bt">Ask AI</span>
+  </button>
+  <button class="bn-item" data-target="targetCard">
+    <span class="bi">🎯</span><span class="bt">Target</span>
+  </button>
+  <button class="bn-item" data-target="progressCard">
+    <span class="bi">📊</span><span class="bt">Progress</span>
+  </button>
+</nav>
+
+<script>
+"use strict";
+
+/* ===================== 3 API KEYS (Round-Robin) ===================== */
+/* API keys (obfuscated) — decoded at runtime */
+const _k = [
+  "QVEuQWI4Uk42SnZ6V3BVc3g1VVlzSG5aejhkRGJ6NG9HOU95VVVST1FhS095RkZzU2I0X1E=",
+  "QVEuQWI4Uk42SmZKZjNsbkZYUkxmX2RUcjZkQnVlUjYxa2JPOV9hSFpzY2FadDhXemtTVlE=",
+  "QVEuQWI4Uk42S2duMFZBRVNQNnFIc2FqUENzNzJqTFduZW5icDZVLXdXZ2VwVDV1bUQyemc="
+];
+const GEMINI_KEYS = _k.map(s => atob(s));
+const GEMINI_MODEL = "gemini-3.5-flash";
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=";
+
+/* Round-robin counter — हर सवाल अगली key पर जाएगा */
+let keyIndex = 0;
+
+/* यह function अगली key देता है (round-robin) */
+function getNextKey(){
+  const key = GEMINI_KEYS[keyIndex % GEMINI_KEYS.length];
+  keyIndex++;
+  return key;
+}
+
+const SUBJECTS = {
+  "1-5":  ["Hindi","English","Mathematics","EVS"],
+  "6-8":  ["Hindi","English","Mathematics","Science","Social Science"],
+  "9-10": ["Hindi","English","Mathematics","Science","Social Science"],
+  "11-12":["Physics","Chemistry","Mathematics","Biology","Hindi","English","Other Subjects"]
+};
+
+/* ===================== STATE ===================== */
+const MAX_SAVED_CHATS = 10;
+
+const state = {
+  selectedClass:null,
+  selectedSubject:null,
+  history:[],
+  busy:false,
+  currentChatId:null
+};
+
+/* ===================== CHAT STORAGE ===================== */
+function getSavedChats(){
+  try{ return JSON.parse(localStorage.getItem("gc_chats")||"[]"); }catch(e){ return []; }
+}
+function saveChats(arr){
+  // केवल आखिरी 10 चैट्स रखें
+  if(arr.length > MAX_SAVED_CHATS){
+    arr = arr.slice(arr.length - MAX_SAVED_CHATS);
+  }
+  localStorage.setItem("gc_chats", JSON.stringify(arr));
+}
+function saveCurrentChat(){
+  if(state.history.length === 0) return;
+  const chats = getSavedChats();
+  const firstUserMsg = state.history.find(m=>m.role==="user");
+  const title = firstUserMsg ? firstUserMsg.content.slice(0,40) : "चैट";
+  const chatData = {
+    id: state.currentChatId || Date.now().toString(),
+    title: title,
+    messages: state.history,
+    class: state.selectedClass,
+    subject: state.selectedSubject,
+    time: new Date().toLocaleTimeString("hi-IN",{hour:"2-digit",minute:"2-digit"}),
+    date: new Date().toLocaleDateString("hi-IN",{day:"2-digit",month:"short"})
+  };
+  const idx = chats.findIndex(c=>c.id===chatData.id);
+  if(idx >= 0){
+    chats[idx] = chatData;
+  } else {
+    chats.push(chatData);
+  }
+  saveChats(chats);
+  state.currentChatId = chatData.id;
+  renderSidebar();
+}
+function deleteChat(id){
+  let chats = getSavedChats().filter(c=>c.id!==id);
+  saveChats(chats);
+  if(state.currentChatId === id){
+    newChat();
+  }
+  renderSidebar();
+}
+function loadChat(id){
+  const chats = getSavedChats();
+  const chat = chats.find(c=>c.id===id);
+  if(!chat) return;
+  closeSidebar();
+  state.currentChatId = chat.id;
+  state.history = chat.messages.map(m=>({role:m.role,content:m.content}));
+  // class और subject set करें
+  if(chat.class){
+    selectClass(chat.class);
+    if(chat.subject){
+      setTimeout(()=>{
+        selectSubject(chat.subject);
+        // चैट render करें
+        const box = document.getElementById("chatBox");
+        box.innerHTML = "";
+        chat.messages.forEach(m=>{
+          const {bub} = addMsg(m.role, m.content);
+          if(m.role === "assistant"){
+            // actions बटन नहीं दोहराएँगे पुराने messages पर (सिर्फ अंतिम जवाब पर)
+          }
+        });
+        // अंतिम AI जवाब पर actions जोड़ें
+        const lastAi = chat.messages[chat.messages.length-1];
+        if(lastAi && lastAi.role === "assistant"){
+          const allBubbles = box.querySelectorAll(".msg.ai .bubble");
+          if(allBubbles.length > 0){
+            const lastBubble = allBubbles[allBubbles.length-1];
+            addAnswerActions(lastBubble, lastAi.content);
+          }
+        }
+        document.getElementById("qInput").focus();
+      }, 100);
+    }
+  }
+  renderSidebar();
+}
+function renderSidebar(){
+  const list = document.getElementById("sidebarList");
+  const chats = getSavedChats();
+  list.innerHTML = "";
+  if(chats.length === 0){
+    list.innerHTML = '<div class="sidebar-empty">अभी कोई चैट save नहीं है।<br>सवाल पूछें और यहाँ दिखेगा।</div>';
+    return;
+  }
+  // नए से पुराने क्रम में
+  chats.slice().reverse().forEach(c=>{
+    const item = document.createElement("div");
+    item.className = "chat-item" + (c.id===state.currentChatId ? " active" : "");
+    item.innerHTML = '<div class="chat-item-title">'+escapeHtml(c.title)+'</div>'+
+      '<div class="chat-item-meta"><span>Class '+c.class+'</span>•<span>'+c.subject+'</span>•<span>'+c.date+' '+c.time+'</span>'+
+      '<button class="chat-item-del" data-id="'+c.id+'" title="डिलीट करें">🗑️</button></div>';
+    item.addEventListener("click",(e)=>{
+      if(e.target.classList.contains("chat-item-del")) return;
+      loadChat(c.id);
+    });
+    const delBtn = item.querySelector(".chat-item-del");
+    delBtn.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      if(confirm("यह चैट डिलीट करें?")){
+        deleteChat(c.id);
+      }
+    });
+    list.appendChild(item);
+  });
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">");
+}
+function openSidebar(){
+  renderSidebar();
+  document.getElementById("sidebarBg").classList.add("show");
+  document.getElementById("sidebar").classList.add("show");
+}
+function closeSidebar(){
+  document.getElementById("sidebarBg").classList.remove("show");
+  document.getElementById("sidebar").classList.remove("show");
+}
+
+/* ===================== STORAGE ===================== */
+function loadTheme(){
+  const t = localStorage.getItem("gc_theme") || "light";
+  applyTheme(t);
+}
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t==="dark"?"dark":"light");
+  document.getElementById("themeBtn").textContent = t==="dark" ? "☀️" : "🌙";
+  document.getElementById("themeBtn").title = t==="dark" ? "Light Mode" : "Dark Mode";
+}
+
+/* ============================================================
+   ====== TODAY'S TARGET / TO-DO  +  MY PROGRESS ============
+   ============================================================ */
+
+/* आज की date key (YYYY-MM-DD) — ताकि आज ≠ कल */
+function todayKey(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return y+"-"+m+"-"+day;
+}
+
+/* सभी tasks { date: [{id,text,done}], ... } */
+function getAllTasks(){
+  try{ return JSON.parse(localStorage.getItem("gc_tasks")||"{}"); }catch(e){ return {}; }
+}
+function saveAllTasks(obj){
+  localStorage.setItem("gc_tasks", JSON.stringify(obj));
+}
+function getTodayTasks(){
+  const all = getAllTasks();
+  return all[todayKey()] || [];
+}
+function setTodayTasks(arr){
+  const all = getAllTasks();
+  all[todayKey()] = arr;
+  saveAllTasks(all);
+}
+
+/* Streak: कितने लगातार दिन कम से कम 1 task complete किया */
+function getStreak(){
+  const all = getAllTasks();
+  let streak = 0;
+  const d = new Date();
+  /* आज से पीछे जाते हुए check */
+  for(;;){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    const key = y+"-"+m+"-"+day;
+    const tasks = all[key] || [];
+    const completed = tasks.filter(t=>t.done).length;
+    if(completed > 0){
+      streak++;
+      d.setDate(d.getDate()-1);
+    } else {
+      /* अगर आज 0 completed हैं तो streak तोड़ मत — कल से check करो */
+      if(streak === 0 && key === todayKey()){
+        d.setDate(d.getDate()-1);
+        continue;
+      }
+      break;
+    }
+  }
+  return streak;
+}
+
+/* कुल completed tasks (सभी दिनों के) */
+function getTotalCompleted(){
+  const all = getAllTasks();
+  let total = 0;
+  Object.keys(all).forEach(k=>{
+    total += (all[k]||[]).filter(t=>t.done).length;
+  });
+  return total;
+}
+
+/* आखिरी 7 दिन का completed count (आज सहित) */
+function getWeeklyData(){
+  const all = getAllTasks();
+  const days = [];
+  const d = new Date();
+  const labels = ["र","सो","म","बु","गु","शु","श"]; /* रवि...शनि fallback */
+  for(let i=6;i>=0;i--){
+    const td = new Date(d);
+    td.setDate(d.getDate()-i);
+    const y = td.getFullYear();
+    const m = String(td.getMonth()+1).padStart(2,"0");
+    const day = String(td.getDate()).padStart(2,"0");
+    const key = y+"-"+m+"-"+day;
+    const cnt = (all[key]||[]).filter(t=>t.done).length;
+    const dow = td.getDay();
+    const lbl = ["रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि"][dow].slice(0,2);
+    days.push({lbl, cnt, today: i===0});
+  }
+  return days;
+}
+
+/* ===== Task CRUD ===== */
+function addTask(text){
+  if(!text || !text.trim()) return;
+  const tasks = getTodayTasks();
+  tasks.push({ id: Date.now().toString()+Math.random().toString(36).slice(2,6), text: text.trim(), done:false });
+  setTodayTasks(tasks);
+  renderTodo();
+  renderProgress();
+}
+function toggleTask(id){
+  const tasks = getTodayTasks();
+  const t = tasks.find(x=>x.id===id);
+  if(t){ t.done = !t.done; setTodayTasks(tasks); renderTodo(); renderProgress(); }
+}
+function deleteTask(id){
+  const tasks = getTodayTasks().filter(x=>x.id!==id);
+  setTodayTasks(tasks);
+  renderTodo();
+  renderProgress();
+}
+function editTask(id){
+  const tasks = getTodayTasks();
+  const t = tasks.find(x=>x.id===id);
+  if(!t) return;
+  const item = document.querySelector('.todo-item[data-id="'+id+'"]');
+  if(!item) return;
+  item.innerHTML = '';
+  const input = document.createElement('input');
+  input.type = 'text'; input.className = 'todo-edit-input'; input.value = t.text; input.maxLength = 120;
+  const save = document.createElement('button');
+  save.className='todo-act'; save.innerHTML='💾'; save.title='Save';
+  const cancel = document.createElement('button');
+  cancel.className='todo-act'; cancel.innerHTML='✕'; cancel.title='Cancel';
+  item.appendChild(input); item.appendChild(save); item.appendChild(cancel);
+  input.focus(); input.select();
+  function commit(){
+    const v = input.value.trim();
+    if(v){ t.text = v; setTodayTasks(tasks); }
+    renderTodo();
+  }
+  save.addEventListener('click', commit);
+  cancel.addEventListener('click', ()=>renderTodo());
+  input.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter') commit();
+    if(e.key==='Escape') renderTodo();
+  });
+}
+
+/* ===== Render ===== */
+function renderTodo(){
+  const list = document.getElementById("todoList");
+  const tasks = getTodayTasks();
+  list.innerHTML = "";
+  if(tasks.length === 0){
+    list.innerHTML = '<div class="todo-empty">अभी कोई task नहीं है। ऊपर लिखकर ➕ दबाएँ।</div>';
+  } else {
+    tasks.forEach(t=>{
+      const item = document.createElement('div');
+      item.className = 'todo-item' + (t.done ? ' done' : '');
+      item.dataset.id = t.id;
+      item.innerHTML =
+        '<div class="todo-check" data-id="'+t.id+'"><span class="tick">✓</span></div>'+
+        '<div class="todo-text">'+escapeHtml(t.text)+'</div>'+
+        '<div class="todo-actions">'+
+          '<button class="todo-act edit" data-id="'+t.id+'" title="Edit">✏️</button>'+
+          '<button class="todo-act del" data-id="'+t.id+'" title="Delete">🗑️</button>'+
+        '</div>';
+      list.appendChild(item);
+    });
+    list.querySelectorAll('.todo-check').forEach(el=>el.addEventListener('click',()=>toggleTask(el.dataset.id)));
+    list.querySelectorAll('.todo-act.edit').forEach(el=>el.addEventListener('click',()=>editTask(el.dataset.id)));
+    list.querySelectorAll('.todo-act.del').forEach(el=>el.addEventListener('click',()=>deleteTask(el.dataset.id)));
+  }
+  /* progress top bar */
+  const done = tasks.filter(t=>t.done).length;
+  const total = tasks.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById("todoCount").textContent = "Today's Progress: "+done+" / "+total;
+  document.getElementById("todoPct").textContent = pct+"% Completed";
+  document.getElementById("todoFill").style.width = pct+"%";
+  /* date label */
+  const d = new Date();
+  document.getElementById("todoDateLabel").textContent = d.toLocaleDateString("hi-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+function renderProgress(){
+  const tasks = getTodayTasks();
+  const done = tasks.filter(t=>t.done).length;
+  const total = tasks.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById("progCompleted").textContent = done+" / "+total;
+  document.getElementById("progPercent").textContent = pct+"%";
+  document.getElementById("progTotal").textContent = getTotalCompleted();
+  document.getElementById("progStreak").textContent = getStreak()+" Days";
+  /* weekly bars */
+  const week = getWeeklyData();
+  const max = Math.max(1, ...week.map(w=>w.cnt));
+  const wb = document.getElementById("weeklyBars");
+  wb.innerHTML = "";
+  week.forEach(w=>{
+    const h = Math.round((w.cnt/max)*100);
+    const col = document.createElement('div');
+    col.className = 'wbar-col' + (w.today ? ' today' : '');
+    col.innerHTML =
+      '<div class="wbar-val">'+(w.cnt||'')+'</div>'+
+      '<div class="wbar" style="height:'+h+'%"></div>'+
+      '<div class="wbar-lbl">'+w.lbl+'</div>';
+    wb.appendChild(col);
+  });
+}
+
+/* ============================================================
+   ==================== INIT / RENDER =========================
+   ============================================================ */
+function init(){
+  loadTheme();
+  renderClasses();
+
+  /* theme toggle */
+  document.getElementById("themeBtn").addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme");
+    const next = cur==="dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem("gc_theme", next);
+  });
+
+  const qInput = document.getElementById("qInput");
+  qInput.addEventListener("input", autoGrow);
+  qInput.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendQuestion(); }
+  });
+  document.getElementById("askBtn").addEventListener("click", sendQuestion);
+  document.getElementById("newBtn").addEventListener("click", newChat);
+  document.getElementById("historyBtn").addEventListener("click", openSidebar);
+  document.getElementById("sidebarClose").addEventListener("click", closeSidebar);
+  document.getElementById("sidebarBg").addEventListener("click", closeSidebar);
+  document.getElementById("sidebarNewBtn").addEventListener("click", ()=>{ closeSidebar(); newChat(); });
+
+  /* AI hero scroll button → class card पर focus */
+  document.getElementById("aiScrollBtn").addEventListener("click", ()=>{
+    const el = document.getElementById("classCard");
+    el.scrollIntoView({behavior:"smooth", block:"start"});
+    el.style.transition="box-shadow .4s";
+    el.style.boxShadow="0 0 0 3px var(--brand)";
+    setTimeout(()=>{ el.style.boxShadow=""; }, 1200);
+  });
+
+  /* To-Do */
+  const ti = document.getElementById("todoInput");
+  document.getElementById("todoAddBtn").addEventListener("click", ()=>{
+    addTask(ti.value); ti.value=""; ti.focus();
+  });
+  ti.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter"){ addTask(ti.value); ti.value=""; }
+  });
+  renderTodo();
+  renderProgress();
+
+  /* Bottom nav */
+  document.querySelectorAll('.bn-item').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = btn.dataset.target;
+      const el = document.getElementById(target);
+      if(el){
+        el.scrollIntoView({behavior:"smooth", block:"start"});
+      }
+      document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
+/* ===================== RENDER ===================== */
+function renderClasses(){
+  const wrap = document.getElementById("classList");
+  wrap.innerHTML = "";
+  for(let i=1;i<=12;i++){
+    const el = document.createElement("div");
+    el.className="opt"; el.textContent="Class "+i; el.dataset.cls=i;
+    el.addEventListener("click",()=>selectClass(i));
+    wrap.appendChild(el);
+  }
+}
+
+function classRange(c){
+  if(c<=5) return "1-5";
+  if(c<=8) return "6-8";
+  if(c<=10) return "9-10";
+  return "11-12";
+}
+
+function selectClass(c){
+  state.selectedClass = c;
+  document.querySelectorAll("#classList .opt").forEach(o=>{
+    o.classList.toggle("active", +o.dataset.cls===c);
+  });
+  const range = classRange(c);
+  const subs = SUBJECTS[range];
+  const sl = document.getElementById("subjectList");
+  sl.innerHTML="";
+  subs.forEach(s=>{
+    const el=document.createElement("div");
+    el.className="opt"; el.textContent=s; el.dataset.sub=s;
+    el.addEventListener("click",()=>selectSubject(s));
+    sl.appendChild(el);
+  });
+  document.getElementById("subjectHint").textContent = "कक्षा "+c+" के अनुसार विषय";
+  document.getElementById("subjectCard").style.display="block";
+  state.selectedSubject=null;
+  document.getElementById("askCard").style.display="none";
+  document.getElementById("composer").style.display="none";
+  document.getElementById("chatSection").classList.remove("show");
+  updateCtxMeta();
+}
+
+function selectSubject(s){
+  state.selectedSubject=s;
+  document.querySelectorAll("#subjectList .opt").forEach(o=>{
+    o.classList.toggle("active", o.dataset.sub===s);
+  });
+  document.getElementById("askCard").style.display="block";
+  document.getElementById("composer").style.display="block";
+  document.getElementById("chatSection").classList.add("show");
+  updateCtxMeta();
+  document.getElementById("qInput").focus();
+}
+
+function updateCtxMeta(){
+  document.getElementById("ctxClass").textContent = state.selectedClass? "Class "+state.selectedClass : "Class —";
+  document.getElementById("ctxSubject").textContent = state.selectedSubject || "Subject —";
+}
+
+/* ===================== CHAT ===================== */
+function autoGrow(){
+  const t=document.getElementById("qInput");
+  t.style.height="auto";
+  t.style.height=Math.min(t.scrollHeight,180)+"px";
+}
+
+function addMsg(role, content){
+  const box=document.getElementById("chatBox");
+  const m=document.createElement("div");
+  m.className="msg "+(role==="user"?"user":"ai");
+
+  const av=document.createElement("div");
+  av.className="av";
+  av.textContent = role==="user" ? "🧑" : "🤖";
+
+  const bub=document.createElement("div");
+  bub.className="bubble";
+  bub.innerHTML = renderMd(content);
+
+  m.appendChild(av); m.appendChild(bub);
+  box.appendChild(m);
+  box.scrollTop = box.scrollHeight;
+  return {m, bub};
+}
+
+function renderMd(text){
+  let t = text;
+  t = t.replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">");
+  t = t.replace(/```([\s\S]*?)```/g, (m,p1)=>"<pre>"+p1.replace(/^\n/,"")+"</pre>");
+  t = t.replace(/`([^`]+)`/g,"<code>$1</code>");
+  t = t.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  const lines = t.split("\n");
+  let html=""; let inUl=false, inOl=false;
+  for(const ln of lines){
+    const ul = ln.match(/^\s*[-•]\s+(.*)/);
+    const ol = ln.match(/^\s*\d+[.)]\s+(.*)/);
+    if(ul){
+      if(inOl){html+="</ol>";inOl=false;}
+      if(!inUl){html+="<ul>";inUl=true;}
+      html+="<li>"+ul[1]+"</li>";
+    } else if(ol){
+      if(inUl){html+="</ul>";inUl=false;}
+      if(!inOl){html+="<ol>";inOl=true;}
+      html+="<li>"+ol[1]+"</li>";
+    } else {
+      if(inUl){html+="</ul>";inUl=false;}
+      if(inOl){html+="</ol>";inOl=false;}
+      if(ln.trim()===""){ html+="<p></p>"; }
+      else html += (html.endsWith("</p>")||html===""?"":"<br>") + ln;
+    }
+  }
+  if(inUl)html+="</ul>";
+  if(inOl)html+="</ol>";
+  html = html.replace(/<br><\/p>/g,"</p>").replace(/<p><\/p>/g,"<br>");
+  return html;
+}
+
+function showError(msg){
+  const b=document.getElementById("errBanner");
+  b.textContent="⚠️ "+msg;
+  b.classList.add("show");
+  setTimeout(()=>b.classList.remove("show"), 8000);
+}
+
+function setBusy(b){
+  state.busy=b;
+  document.getElementById("askBtn").disabled=b;
+  document.getElementById("qInput").disabled=b;
+}
+
+/* ===================== PROMPT ===================== */
+function systemPromptText(){
+  const c = state.selectedClass;
+  const s = state.selectedSubject;
+  return `तुम "ज्ञान चौपाल" हो — Bihar Board (BSEB) के students के लिए एक AI Study Assistant और teacher हो।
+
+STUDENT CONTEXT:
+- Class: ${c}
+- Subject: ${s}
+
+तुम्हारे RULES (कड़ाई से follow करो):
+1. जवाब देने की भाषा student के सवाल की भाषा से match करो:
+   - Devanagari/हिंदी सवाल → पूरी तरह हिंदी जवाब (देवनागरी में)
+   - Roman Hindi (Hinglish like "kya hai") → Simple Hinglish जवाब
+   - English सवाल → English जवाब
+2. जवाब हमेशा Class ${c} के student के level के अनुसार हो। छोटी कक्षा (1-5) के लिए बहुत simple भाषा, बड़ी कक्षा (11-12) के लिए detailed जवाब।
+3. Subject: ${s} के अनुसार ही जवाब दो।
+4. MATH: पहले formula, फिर step-by-step solution, फिर **Final Answer** अलग से लिखो।
+5. SCIENCE: आसान explanation, real-life examples, और important formulas/equations शामिल करो।
+6. THEORY: direct answer, फिर short explanation। बहुत लंबा मत बनाओ।
+7. जवाब clean और structured रखो — **bold** से important points, और ज़रूरत हो तो bullet list (-) या numbered list (1.) use करो।
+8. गलत जानकारी कभी invent मत करो। अगर पक्का नहीं पता तो सच बताओ।
+9. Student को friendly लेकिन educational तरीके से जवाब दो।
+10. अगर सवाल subject/class से बाहर हो तो बताओ कि यह इस subject में नहीं आता, फिर भी best effort से help करो।`;
+}
+
+/* ===================== GEMINI API CALL (Round-Robin + Auto-Retry) ===================== */
+async function callGemini(chatMessages){
+  const sysText = systemPromptText();
+
+  const contents = chatMessages.map(m=>({
+    role: m.role==="user" ? "user" : "model",
+    parts:[{text:m.content}]
+  }));
+
+  const body = {
+    contents: contents,
+    systemInstruction: { parts:[{text:sysText}] },
+    generationConfig: { temperature:0.5, maxOutputTokens:2000 }
+  };
+
+  /* 3 keys बारी-बारी से try होंगी। अगर एक rate-limited हो जाए तो अगली पर try करेगा।
+     अगर तीनों rate-limited हो जाएं तो 5 सेकंड रुककर फिर से कोशिश करेगा।
+     तीन round (9 attempts) तक कोशिश करेगा। */
+  const maxRounds = 3;
+  const allKeys = GEMINI_KEYS.length;
+
+  for(let round=0; round<maxRounds; round++){
+    let allKeysFailed = true;
+
+    for(let k=0; k<allKeys; k++){
+      const key = getNextKey(); // round-robin — हर बार अगली key
+      const url = GEMINI_BASE + key;
+
+      try{
+        const res = await fetch(url, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify(body)
+        });
+
+        if(res.ok){
+          /* Success! */
+          const j = await res.json();
+          const txt = j.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(txt && txt.trim()){
+            return txt.trim();
+          }
+          if(j.promptFeedback?.blockReason){
+            throw new Error("AI इस सवाल का जवाब नहीं दे सका। कृपया दूसरे तरीके से पूछें।");
+          }
+          throw new Error("खाली जवाब — फिर कोशिश करें।");
+        }
+
+        /* Error response */
+        const errTxt = await res.text().catch(()=>"");
+        let errMsg = "";
+        try{ const j=JSON.parse(errTxt); errMsg = j.error?.message||""; }catch(e){ errMsg = errTxt; }
+
+        if(res.status===429){
+          /* Rate limited on this key — अगली key try करें */
+          console.log("Key "+(keyIndex%allKeys)+" rate limited, trying next...");
+          allKeysFailed = allKeysFailed; // still true
+          continue;
+        }
+
+        if(res.status===403){
+          throw new Error("API access denied — key में समस्या है।");
+        }
+        if(res.status>=500){
+          throw new Error("Google सर्वर में समस्या। कृपया थोड़ी देर बाद कोशिश करें।");
+        }
+
+        /* Other error — अगली key try करें */
+        continue;
+
+      }catch(e){
+        if(e.message && !e.message.includes("rate") && !e.message.includes("खाली")){
+          throw e; // genuine error, don't retry
+        }
+        continue; // try next key
+      }
+    }
+
+    /* अगर इस round में सभी keys rate-limited हो गईं */
+    if(round < maxRounds-1){
+      /* 5 सेकंड रुकें फिर फिर से कोशिश करें */
+      await new Promise(r=>setTimeout(r, 5000));
+    }
+  }
+
+  /* तीनों rounds के बाद भी नहीं हुआ */
+  throw new Error("अभी बहुत ज़्यादा सवाल पूछे जा रहे हैं। कृपया 1-2 मिनट रुककर फिर कोशिश करें।");
+}
+
+/* ===================== SEND ===================== */
+async function sendQuestion(){
+  if(state.busy) return;
+  const q = document.getElementById("qInput").value.trim();
+  if(!q) return;
+  if(!state.selectedClass || !state.selectedSubject){ showError("पहले कक्षा और विषय चुनें"); return; }
+
+  addMsg("user", q);
+  state.history.push({role:"user", content:q});
+  document.getElementById("qInput").value="";
+  autoGrow();
+  setBusy(true);
+
+  const tEl = addTypingIndicator();
+
+  try{
+    const ans = await callGemini(state.history);
+    tEl.remove();
+    const {bub} = addMsg("ai", ans);
+    state.history.push({role:"assistant", content:ans});
+    addAnswerActions(bub, ans);
+    saveCurrentChat();
+  }catch(e){
+    tEl.remove();
+    showError("अभी AI से जवाब नहीं मिल पा रहा है। कृपया थोड़ी देर बाद फिर कोशिश करें। ("+(e.message||"error")+")");
+    saveCurrentChat();
+  }finally{
+    setBusy(false);
+  }
+}
+
+function addTypingIndicator(){
+  const box=document.getElementById("chatBox");
+  const m=document.createElement("div");
+  m.className="msg ai";
+  m.innerHTML='<div class="av">🤖</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  box.appendChild(m);
+  box.scrollTop=box.scrollHeight;
+  return m;
+}
+
+function addAnswerActions(bubble, answerText){
+  const box=document.getElementById("chatBox");
+  const wrap=document.createElement("div");
+  wrap.className="actions";
+
+  const copyBtn=document.createElement("button");
+  copyBtn.className="act"; copyBtn.innerHTML="📋 Copy";
+  copyBtn.addEventListener("click", async ()=>{
+    try{
+      await navigator.clipboard.writeText(answerText);
+      copyBtn.innerHTML="✅ Copied";
+      setTimeout(()=>copyBtn.innerHTML="📋 Copy", 1500);
+    }catch(e){
+      const ta=document.createElement("textarea");
+      ta.value=answerText; document.body.appendChild(ta); ta.select();
+      try{document.execCommand("copy"); copyBtn.innerHTML="✅ Copied"; setTimeout(()=>copyBtn.innerHTML="📋 Copy",1500);}catch(_){}
+      document.body.removeChild(ta);
+    }
+  });
+
+  const regenBtn=document.createElement("button");
+  regenBtn.className="act"; regenBtn.innerHTML="🔄 फिर से जवाब दें";
+  regenBtn.addEventListener("click", ()=>regenerate(bubble, wrap));
+
+  const easyBtn=document.createElement("button");
+  easyBtn.className="act"; easyBtn.innerHTML="🤔 आसान भाषा में समझाएँ";
+  easyBtn.addEventListener("click", ()=>explainEasy(bubble));
+
+  wrap.appendChild(copyBtn); wrap.appendChild(regenBtn); wrap.appendChild(easyBtn);
+  box.appendChild(wrap);
+  box.scrollTop=box.scrollHeight;
+}
+
+async function regenerate(bubble, actionsWrap){
+  if(state.busy) return;
+  if(state.history[state.history.length-1]?.role==="assistant"){
+    state.history.pop();
+  }
+  actionsWrap.remove();
+  bubble.parentElement.remove();
+  setBusy(true);
+  const tEl=addTypingIndicator();
+  try{
+    const ans=await callGemini(state.history);
+    tEl.remove();
+    const {bub}=addMsg("ai",ans);
+    state.history.push({role:"assistant",content:ans});
+    addAnswerActions(bub,ans);
+  }catch(e){
+    tEl.remove();
+    showError("अभी AI से जवाब नहीं मिल पा रहा है। कृपया थोड़ी देर बाद फिर कोशिश करें। ("+(e.message||"error")+")");
+  }finally{
+    setBusy(false);
+  }
+}
+
+async function explainEasy(bubble){
+  if(state.busy) return;
+  const lastAns = state.history[state.history.length-1];
+  if(!lastAns || lastAns.role!=="assistant") return;
+  const req = "इस जवाब को और भी आसान और simple भाषा में, छोटे बच्चों को समझाने वाले तरीके से explain करो। बहुत simple शब्द use करो।";
+  addMsg("user", req);
+  state.history.push({role:"user",content:req});
+  setBusy(true);
+  const tEl=addTypingIndicator();
+  try{
+    const ans=await callGemini(state.history);
+    tEl.remove();
+    const {bub}=addMsg("ai",ans);
+    state.history.push({role:"assistant",content:ans});
+    addAnswerActions(bub,ans);
+  }catch(e){
+    tEl.remove();
+    showError("अभी AI से जवाब नहीं मिल पा रहा है। ("+(e.message||"error")+")");
+  }finally{
+    setBusy(false);
+  }
+}
+
+function newChat(){
+  state.history=[];
+  state.currentChatId=null;
+  document.getElementById("chatBox").innerHTML="";
+  document.getElementById("qInput").value="";
+  autoGrow();
+  renderSidebar();
+  if(state.selectedClass && state.selectedSubject){
+    document.getElementById("qInput").focus();
+  }
+}
+
+/* ===================== BOOT ===================== */
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
