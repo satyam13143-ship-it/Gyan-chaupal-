@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>ज्ञान चौपाल — Bihar Board AI Study Assistant</title>
+<meta name="description" content="Bihar Board Class 1-12 के लिए AI Study Assistant। Class चुनें → Subject चुनें → सवाल पूछें → AI जवाब दे।">
+<style>
+:root{
+  --bg:#04120c; --surface:rgba(12,32,22,.7); --surface-2:rgba(8,24,16,.6);
+  --text:#e8f5ee; --text-soft:#8eb3a0; --text-mute:#5a7a68;
+  --border:rgba(0,255,136,.15); --border-2:rgba(0,255,136,.3);
+  --brand:#00ff88; --brand-2:#00cc6f; --brand-soft:rgba(0,255,136,.08);
+  --accent:#00ff88; --accent-soft:rgba(0,255,136,.1);
+  --danger:#ff4466; --danger-soft:rgba(255,68,102,.1);
+  --bubble-user:#00cc6f; --bubble-user-text:#04120c;
+  --bubble-ai:rgba(12,32,22,.8); --bubble-ai-text:#e8f5ee;
+  --shadow:0 4px 20px rgba(0,255,136,.06); --shadow-lg:0 8px 32px rgba(0,255,136,.12);
+  --radius:16px; --radius-sm:10px;
+  --maxw:960px;
+}
+[data-theme="light"]{
+  --bg:#f0fdf4; --surface:#ffffff; --surface-2:#f4faf6;
+  --text:#0f172a; --text-soft:#475569; --text-mute:#94a3b8;
+  --border:#d1e7d8; --border-2:#a7d4b4;
+  --brand:#1f8f43; --brand-2:#16a34a; --brand-soft:#dcfce7;
+  --accent:#ea580c; --accent-soft:#ffedd5;
+  --danger:#dc2626; --danger-soft:#fee2e2;
+  --bubble-user:#1f8f43; --bubble-user-text:#ffffff;
+  --bubble-ai:#ffffff; --bubble-ai-text:#0f172a;
+  --shadow:0 4px 14px rgba(31,143,67,.10); --shadow-lg:0 12px 32px rgba(31,143,67,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Inter","Segoe UI",system-ui,-apple-system,"Noto Sans Devanagari",Arial,sans-serif;
+  background:radial-gradient(ellipse at 50% 0%,#0a2a18 0%,#04120c 50%,#020a06 100%);
+  background-attachment:fixed;
+  color:var(--text);
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
+  min-height:100vh;
+}
+[data-theme="light"] body{
+  background:radial-gradient(ellipse at 50% 0%,#eefbf2 0%,#f0fdf4 50%,#ffffff 100%);
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px 130px;}
+
+header.app{
+  position:sticky; top:0; z-index:50;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.header-row{
+  max-width:var(--maxw); margin:0 auto; padding:12px 16px;
+  display:flex; align-items:center; gap:12px;
+}
+header.app{
+  background:rgba(4,18,12,.6) !important;
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(0,255,136,.1);
+}
+[data-theme="light"] header.app{
+  background:rgba(255,255,255,.85) !important;
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  width:42px;height:42px;border-radius:12px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  display:grid;place-items:center; color:#04120c; font-weight:800;
+  font-size:22px; box-shadow:0 0 16px rgba(0,255,136,.2);
+}
+.brand-text h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-.2px}
+.brand-text p{font-size:11.5px;margin:0;color:var(--text-soft);font-weight:600}
+.spacer{flex:1}
+.icon-btn{
+  background:var(--surface-2); border:1px solid var(--border);
+  width:42px;height:42px;border-radius:12px; cursor:pointer;
+  display:grid;place-items:center; color:var(--text);
+  font-size:18px; transition:.2s; flex:0 0 auto;
+}
+.icon-btn:hover{background:var(--surface);border-color:var(--border-2);transform:translateY(-1px)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--brand-2);display:inline-block;margin-right:5px;box-shadow:0 0 0 2px var(--surface)}
+
+.hero{padding:36px 0 10px;text-align:center;position:relative}
+.hero .tagline{
+  display:inline-block; font-size:13px; font-weight:700;
+  color:var(--brand); background:var(--brand-soft);
+  padding:6px 16px; border-radius:999px; margin-bottom:16px;
+  border:1px solid var(--border-2);
+}
+.hero h2{font-size:clamp(26px,6vw,38px);margin:0 0 8px;font-weight:900;line-height:1.2;letter-spacing:-.5px}
+.hero h2 .hl{color:var(--brand);text-shadow:0 0 30px rgba(0,255,136,.3)}
+.hero p.sub{margin:0;color:var(--text-soft);font-size:15px;max-width:520px;margin:0 auto}
+.hero .ready{margin-top:14px;font-size:12px;color:var(--brand);font-weight:700}
+.hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:18px}
+.hero-tag{
+  font-size:12px;font-weight:700;color:var(--brand);
+  border:1px solid var(--border-2);padding:6px 14px;border-radius:999px;
+  background:var(--brand-soft);transition:.2s;
+}
+.hero-tag:hover{border-color:var(--brand);box-shadow:0 0 12px rgba(0,255,136,.15)}
+
+.card{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px; margin-top:16px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(12px);
+  position:relative;
+}
+.card:hover{border-color:var(--border-2);box-shadow:0 4px 24px rgba(0,255,136,.08)}
+.card h3{margin:0 0 4px;font-size:16px;font-weight:800}
+.card .hint{color:var(--text-soft);font-size:12.5px;margin:0 0 14px}
+
+/* ===== AI Hero Banner (prominent) ===== */
+.ai-hero{
+  margin-top:18px;
+  background:linear-gradient(135deg,rgba(0,255,136,.12) 0%,rgba(0,204,111,.08) 100%);
+  border:1px solid var(--border-2);
+  color:#fff; border-radius:var(--radius);
+  padding:26px 22px; box-shadow:var(--shadow-lg);
+  text-align:center; position:relative; overflow:hidden;
+}
+.ai-hero::after{
+  content:""; position:absolute; right:-30px; top:-30px;
+  width:140px; height:140px; border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+.ai-hero .ai-emoji{font-size:38px;display:block;margin-bottom:8px}
+.ai-hero h3{font-size:22px;font-weight:800;margin:0 0 6px;color:#fff}
+.ai-hero p{margin:0 0 16px;opacity:.95;font-size:14.5px;font-weight:500}
+.ai-hero .ai-cta{
+  display:inline-block; background:#fff; color:var(--brand);
+  border:none; border-radius:14px; padding:13px 28px;
+  font-weight:800; font-size:15px; cursor:pointer;
+  font-family:inherit; transition:.2s; box-shadow:0 6px 18px rgba(0,0,0,.15);
+}
+.ai-hero .ai-cta:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.22)}
+
+/* ===== Section title ===== */
+.section-title{
+  display:flex; align-items:center; gap:10px;
+  margin:24px 0 2px; padding:0 4px;
+}
+.section-title .si{
+  width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  background:var(--brand-soft); color:var(--brand);
+  display:grid;place-items:center;font-size:18px;
+  border:1px solid var(--border-2);
+}
+.section-title h2{font-size:18px;font-weight:800;margin:0}
+.section-title .st-sub{font-size:12px;color:var(--text-soft);font-weight:600;margin-left:auto}
+
+.opts{display:grid;gap:10px}
+.opts.cls{grid-template-columns:repeat(6,1fr)}
+.opts.subj{grid-template-columns:repeat(4,1fr)}
+@media(max-width:560px){
+  .opts.cls{grid-template-columns:repeat(3,1fr)}
+  .opts.subj{grid-template-columns:repeat(2,1fr)}
+}
+.opt{
+  background:var(--surface-2); border:2px solid var(--border);
+  border-radius:var(--radius-sm); padding:12px 8px; cursor:pointer;
+  text-align:center; font-weight:700; font-size:14px;
+  transition:.18s; color:var(--text);
+}
+.opt:hover{border-color:var(--border-2);transform:translateY(-2px)}
+.opt.active{
+  background:var(--brand); border-color:var(--brand); color:#fff;
+  box-shadow:0 6px 16px color-mix(in srgb,var(--brand) 40%,transparent);
+}
+
+.step{display:flex;align-items:center;gap:10px}
+.step .num{
+  width:26px;height:26px;border-radius:50%;flex:0 0 auto;
+  background:var(--brand);color:#fff;font-weight:800;font-size:13px;
+  display:grid;place-items:center;
+}
+.step h3{margin:0}
+
+#chatSection{display:none}
+#chatSection.show{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.chat-box{margin-top:16px; display:flex; flex-direction:column; gap:14px;}
+.msg{display:flex;gap:10px;max-width:88%;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg .av{
+  width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  display:grid;place-items:center;font-size:16px;
+}
+.msg.user .av{background:var(--bubble-user);color:#fff}
+.msg.ai .av{background:var(--brand-soft);color:var(--brand)}
+.bubble{
+  padding:12px 14px; border-radius:14px; font-size:14.5px;
+  word-wrap:break-word; overflow-wrap:anywhere;
+}
+.msg.user .bubble{background:var(--bubble-user);color:var(--bubble-user-text);border-bottom-right-radius:4px}
+.msg.ai .bubble{background:var(--bubble-ai);color:var(--bubble-ai-text);border:1px solid var(--border);border-bottom-left-radius:4px}
+.bubble p{margin:.3em 0}
+.bubble p:first-child{margin-top:0}
+.bubble p:last-child{margin-bottom:0}
+.bubble code{background:rgba(0,0,0,.08);padding:1px 6px;border-radius:6px;font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;}
+[data-theme="dark"] .bubble code{background:rgba(255,255,255,.1)}
+.bubble pre{background:rgba(0,0,0,.06);padding:12px;border-radius:10px;overflow-x:auto;margin:.5em 0;font-size:13px;}
+[data-theme="dark"] .bubble pre{background:rgba(0,0,0,.3)}
+.bubble strong{font-weight:800}
+.bubble ul,.bubble ol{margin:.4em 0;padding-left:1.3em}
+.bubble li{margin:.2em 0}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;padding-left:44px}
+.act{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:9px;padding:5px 10px;font-size:12px;cursor:pointer;
+  color:var(--text-soft);transition:.18s;display:flex;align-items:center;gap:4px;
+}
+.act:hover{background:var(--surface);border-color:var(--brand);color:var(--brand)}
+
+.typing{display:inline-flex;gap:4px;align-items:center;padding:4px 0}
+.typing span{width:8px;height:8px;border-radius:50%;background:var(--text-mute);animation:blink 1.4s infinite both}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+.composer{
+  position:fixed; bottom:0; left:0; right:0; z-index:60;
+  background:rgba(4,18,12,.7);
+  backdrop-filter:blur(16px);
+  border-top:1px solid var(--border-2);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+}
+.composer-row{max-width:var(--maxw);margin:0 auto;display:flex;gap:10px;align-items:flex-end;}
+#qInput{
+  flex:1; resize:none; min-height:48px; max-height:180px;
+  background:var(--surface-2); border:1.5px solid var(--border);
+  border-radius:14px; padding:13px 14px; color:var(--text); font-size:15px;
+  font-family:inherit; line-height:1.5; transition:.2s;
+}
+#qInput:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+#qInput:disabled{opacity:.5}
+#askBtn,#newBtn{
+  border:none;border-radius:14px;padding:13px 18px;font-weight:800;font-size:14.5px;cursor:pointer;
+  font-family:inherit;transition:.18s;display:flex;align-items:center;gap:6px;flex:0 0 auto;
+}
+#askBtn{background:var(--brand);color:#fff}
+#askBtn:hover{background:var(--brand-2);transform:translateY(-1px)}
+#askBtn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+#newBtn{background:var(--surface-2);color:var(--text);border:1.5px solid var(--border)}
+#newBtn:hover{border-color:var(--brand);color:var(--brand)}
+#micBtn{
+  border:none;border-radius:50%;padding:0;
+  width:48px;height:48px;flex:0 0 auto;
+  cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;transition:.25s cubic-bezier(.4,0,.2,1);
+  display:grid;place-items:center;
+  box-shadow:0 0 16px rgba(0,255,136,.3);
+  position:relative;
+}
+#micBtn:hover{
+  transform:translateY(-2px) scale(1.05);
+  box-shadow:0 0 24px rgba(0,255,136,.4);
+}
+#micBtn:active{transform:scale(.95)}
+#micBtn svg{width:22px;height:22px;fill:currentColor;pointer-events:none}
+#micBtn.recording{
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  box-shadow:0 4px 12px rgba(220,38,38,.4);
+  animation:micPulse 1.5s ease-in-out infinite;
+}
+#micBtn.recording::before{
+  content:"";position:absolute;inset:-6px;
+  border-radius:50%;border:2px solid var(--danger);
+  opacity:0;animation:micRipple 1.5s ease-out infinite;
+}
+@keyframes micPulse{
+  0%,100%{box-shadow:0 4px 12px rgba(220,38,38,.4)}
+  50%{box-shadow:0 4px 24px rgba(220,38,38,.6)}
+}
+@keyframes micRipple{
+  0%{transform:scale(1);opacity:.8}
+  100%{transform:scale(1.6);opacity:0}
+}
+.composer-meta{max-width:var(--maxw);margin:6px auto 0;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--text-mute)}
+.composer-meta .ctx{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:2px 9px;font-weight:700;color:var(--brand)}
+
+.err-banner{
+  background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger);
+  padding:12px 14px;border-radius:12px;font-size:13.5px;font-weight:600;
+  display:none;align-items:center;gap:8px;
+}
+.err-banner.show{display:flex}
+
+footer{padding:30px 0 10px;color:var(--text-mute);font-size:11.5px;position:relative;z-index:0}
+
+/* History Sidebar */
+.sidebar-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;
+  display:none;opacity:0;transition:opacity .3s;
+}
+.sidebar-bg.show{display:block;opacity:1}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:300px;max-width:85vw;
+  background:rgba(8,24,16,.95);backdrop-filter:blur(16px);z-index:95;
+  transform:translateX(-100%);transition:transform .3s ease;
+  display:flex;flex-direction:column;
+  box-shadow:4px 0 24px rgba(0,255,136,.1);
+  border-right:1px solid var(--border-2);
+}
+.sidebar.show{transform:translateX(0)}
+.sidebar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.sidebar-header h3{margin:0;font-size:16px;font-weight:800}
+.sidebar-close{
+  background:none;border:none;font-size:22px;cursor:pointer;
+  color:var(--text-soft);padding:4px 8px;border-radius:8px;transition:.2s;
+}
+.sidebar-close:hover{background:var(--surface-2)}
+.sidebar-newbtn{
+  margin:12px 16px 8px;padding:10px;border:none;border-radius:10px;
+  background:var(--brand);color:#fff;font-weight:800;font-size:14px;
+  cursor:pointer;font-family:inherit;transition:.2s;
+}
+.sidebar-newbtn:hover{background:var(--brand-2)}
+.sidebar-list{
+  flex:1;overflow-y:auto;padding:8px 12px;
+}
+.sidebar-list::-webkit-scrollbar{width:6px}
+.sidebar-list::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:6px}
+.chat-item{
+  padding:10px 12px;border-radius:10px;cursor:pointer;
+  margin-bottom:6px;transition:.15s;border:1px solid transparent;
+}
+.chat-item:hover{background:var(--surface-2)}
+.chat-item.active{background:var(--brand-soft);border-color:var(--brand)}
+.chat-item-title{
+  font-size:13px;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.chat-item-meta{
+  font-size:11px;color:var(--text-mute);margin-top:3px;
+  display:flex;align-items:center;gap:6px;
+}
+.chat-item-del{
+  background:none;border:none;cursor:pointer;font-size:14px;
+  color:var(--text-mute);padding:2px 4px;border-radius:6px;transition:.2s;
+  margin-left:auto;opacity:0;
+}
+.chat-item:hover .chat-item-del{opacity:1}
+.chat-item-del:hover{color:var(--danger);background:var(--danger-soft)}
+.sidebar-empty{
+  text-align:center;padding:40px 16px;color:var(--text-mute);font-size:13px;
+}
+
+/* ===================== MOBILE BOTTOM NAV ===================== */
+.bottom-nav{
+  position:fixed; bottom:0; left:0; right:0; z-index:55;
+  background:rgba(4,18,12,.8); backdrop-filter:blur(16px);
+  border-top:1px solid var(--border-2);
+  display:none; justify-content:space-around; align-items:center;
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+@media(max-width:720px){ .bottom-nav{display:flex} .composer{bottom:54px} .wrap{padding-bottom:170px} }
+.bn-item{
+  background:none;border:none;cursor:pointer;flex:1;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 2px; color:var(--text-mute); transition:.18s;
+  font-family:inherit;
+}
+.bn-item .bi{font-size:18px;line-height:1}
+.bn-item .bt{font-size:9.5px;font-weight:700}
+.bn-item.active{color:var(--brand)}
+.bn-item:active{transform:scale(.92)}
+
+/* ===================== FORMULA BOOK ===================== */
+.fb-input-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.fb-input{
+  padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:12px;background:var(--surface-2);color:var(--text);
+  font-size:14px;font-family:inherit;transition:.2s;flex:1;
+}
+.fb-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.fb-gen-btn{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;border:none;border-radius:12px;padding:12px 18px;
+  font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;
+  transition:.18s;flex:0 0 auto;white-space:nowrap;
+}
+.fb-gen-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(31,143,67,.3)}
+.fb-gen-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.fb-status{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:30px 16px;font-size:14px;font-weight:600;color:var(--text-soft);
+}
+.fb-spinner{
+  width:28px;height:28px;border:3px solid var(--border);
+  border-top-color:var(--brand);border-radius:50%;
+  animation:fbSpin .8s linear infinite;
+}
+@keyframes fbSpin{to{transform:rotate(360deg)}}
+.fb-error{
+  margin-top:12px;padding:12px 14px;border-radius:10px;
+  background:var(--danger-soft);color:var(--danger);
+  font-size:13px;font-weight:600;text-align:center;
+}
+.fb-result{margin-top:14px}
+.formula-page{
+  background:rgba(0,255,136,.04);border:1px solid var(--border);border-radius:12px;
+  padding:20px 24px;min-height:100px;overflow-x:auto;
+  box-shadow:var(--shadow);
+}
+.formula-page .fb-title{
+  font-size:20px;font-weight:800;text-align:center;
+  color:var(--brand);margin-bottom:16px;
+  text-decoration:underline;text-decoration-color:var(--brand);
+  text-underline-offset:4px;
+}
+.formula-page .fb-section{
+  font-size:16px;font-weight:700;color:#2563eb;
+  margin-top:14px;margin-bottom:6px;
+  border-bottom:1px dashed #c8c4b0;padding-bottom:2px;
+}
+.formula-page .fb-formula{
+  font-size:15px;color:#1a1a2e;margin:4px 0 4px 16px;
+  font-family:"Courier New",monospace;font-weight:600;
+  background:var(--brand-soft);padding:6px 10px;border-radius:6px;
+  display:inline-block;margin:4px 0;
+}
+.formula-page .fb-desc{
+  font-size:13px;color:#475569;margin:2px 0 8px 16px;
+}
+.formula-page .fb-title{color:var(--brand)}
+.formula-page .fb-section{color:#60a5fa;border-color:var(--border)}
+.formula-page .fb-formula{background:rgba(0,255,136,.06);color:var(--text)}
+.formula-page .fb-desc{color:var(--text-soft)}
+
+/* ===================== MCQ QUIZ GENERATOR ===================== */
+.quiz-input-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.quiz-input{
+  padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:12px;background:var(--surface-2);color:var(--text);
+  font-size:14px;font-family:inherit;transition:.2s;flex:1;
+}
+.quiz-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.quiz-gen-btn{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;border:none;border-radius:12px;padding:12px 18px;
+  font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;
+  transition:.18s;flex:0 0 auto;white-space:nowrap;
+}
+.quiz-gen-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(31,143,67,.3)}
+.quiz-gen-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.quiz-status{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:30px 16px;font-size:14px;font-weight:600;color:var(--text-soft);
+}
+.quiz-spinner{
+  width:28px;height:28px;border:3px solid var(--border);
+  border-top-color:var(--brand);border-radius:50%;
+  animation:qSpin .8s linear infinite;
+}
+@keyframes qSpin{to{transform:rotate(360deg)}}
+.quiz-error{
+  margin-top:12px;padding:12px 14px;border-radius:10px;
+  background:var(--danger-soft);color:var(--danger);
+  font-size:13px;font-weight:600;text-align:center;
+}
+.quiz-result{margin-top:14px}
+.quiz-header{
+  font-size:16px;font-weight:800;color:var(--brand);
+  margin-bottom:14px;text-align:center;
+  padding:10px;background:var(--brand-soft);border-radius:10px;
+}
+.quiz-q{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:10px;padding:14px;margin-bottom:10px;
+}
+.quiz-q-num{font-size:14px;font-weight:800;color:var(--brand);margin-bottom:6px}
+.quiz-q-text{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px}
+.quiz-opt{
+  display:block;padding:10px 14px;margin:5px 0;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;cursor:pointer;transition:.15s;
+  background:var(--surface);color:var(--text);
+}
+.quiz-opt:hover{border-color:var(--brand);background:var(--brand-soft)}
+.quiz-opt.selected{
+  border-color:var(--brand);background:var(--brand-soft);
+  font-weight:700;color:var(--brand);
+}
+.quiz-opt.correct{
+  border-color:#16a34a;background:#dcfce7;color:#15803d;font-weight:700;
+}
+.quiz-opt.wrong{
+  border-color:#dc2626;background:#fee2e2;color:#b91c1c;font-weight:700;
+}
+.quiz-actions{display:flex;justify-content:center;margin-top:14px}
+.quiz-submit-btn{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;border:none;border-radius:12px;padding:14px 28px;
+  font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;
+  transition:.18s;
+}
+.quiz-submit-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(31,143,67,.3)}
+.quiz-score{
+  margin-top:16px;padding:20px;border-radius:14px;text-align:center;
+  font-size:18px;font-weight:800;
+}
+.quiz-score.pass{background:var(--brand-soft);color:var(--brand)}
+.quiz-score.fail{background:var(--danger-soft);color:var(--danger)}
+
+/* ===================== MIND MAP GENERATOR ===================== */
+.mm-input-row{display:flex;gap:8px;margin-bottom:12px}
+.mm-input{
+  flex:1;padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:12px;background:var(--surface-2);color:var(--text);
+  font-size:14px;font-family:inherit;transition:.2s;
+}
+.mm-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.mm-gen-btn{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;border:none;border-radius:12px;padding:12px 18px;
+  font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;
+  transition:.18s;flex:0 0 auto;white-space:nowrap;
+}
+.mm-gen-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(31,143,67,.3)}
+.mm-gen-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.mm-status{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:30px 16px;font-size:14px;font-weight:600;color:var(--text-soft);
+}
+.mm-spinner{
+  width:28px;height:28px;border:3px solid var(--border);
+  border-top-color:var(--brand);border-radius:50%;
+  animation:mmSpin .8s linear infinite;
+}
+@keyframes mmSpin{to{transform:rotate(360deg)}}
+.mm-error{
+  margin-top:12px;padding:12px 14px;border-radius:10px;
+  background:var(--danger-soft);color:var(--danger);
+  font-size:13px;font-weight:600;text-align:center;
+}
+.mm-result{margin-top:14px}
+.mm-canvas{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:14px;padding:20px;overflow-x:auto;
+  min-height:200px;
+}
+/* Mind map visual styles */
+.mm-tree{
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;position:relative;padding:10px;
+}
+.mm-root{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;font-weight:800;font-size:15px;
+  padding:12px 24px;border-radius:14px;
+  box-shadow:0 4px 14px rgba(31,143,67,.3);
+  text-align:center;max-width:260px;
+  word-break:break-word;position:relative;z-index:2;
+}
+.mm-root::after{
+  content:"";width:3px;height:24px;background:var(--border-2);
+  margin:0 auto;
+}
+.mm-branches{
+  display:flex;flex-wrap:wrap;justify-content:center;
+  gap:20px 12px;position:relative;
+}
+.mm-branch{
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;flex:1 1 140px;min-width:130px;max-width:200px;
+}
+.mm-branch-line{
+  width:3px;height:20px;background:var(--border-2);
+}
+.mm-branch-title{
+  font-weight:800;font-size:13px;padding:8px 14px;
+  border-radius:10px;color:#fff;text-align:center;
+  word-break:break-word;margin-bottom:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.mm-branch-children{
+  display:flex;flex-direction:column;gap:5px;width:100%;
+  align-items:center;
+}
+.mm-child{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:6px 10px;font-size:12px;
+  font-weight:600;color:var(--text);text-align:center;
+  word-break:break-word;width:90%;
+  transition:.15s;
+}
+.mm-child:hover{
+  border-color:var(--brand);color:var(--brand);
+  transform:translateY(-1px);
+}
+.mm-actions{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+
+/* ===================== NOTES GENERATOR (Handwritten Notebook) ===================== */
+.notes-input-row{display:flex;gap:8px;margin-bottom:12px}
+.notes-input{
+  flex:1;padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:12px;background:var(--surface-2);color:var(--text);
+  font-size:14px;font-family:inherit;transition:.2s;
+}
+.notes-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.notes-gen-btn{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;border:none;border-radius:12px;padding:12px 18px;
+  font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;
+  transition:.18s;flex:0 0 auto;white-space:nowrap;
+}
+.notes-gen-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(31,143,67,.3)}
+.notes-gen-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.notes-status{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:30px 16px;font-size:14px;font-weight:600;color:var(--text-soft);
+}
+.notes-spinner{
+  width:28px;height:28px;border:3px solid var(--border);
+  border-top-color:var(--brand);border-radius:50%;
+  animation:nSpin .8s linear infinite;
+}
+@keyframes nSpin{to{transform:rotate(360deg)}}
+.notes-error{
+  margin-top:12px;padding:12px 14px;border-radius:10px;
+  background:var(--danger-soft);color:var(--danger);
+  font-size:13px;font-weight:600;text-align:center;
+}
+.notes-result{margin-top:14px}
+
+/* Notebook page styling — handwritten look */
+.notebook-page{
+  background:rgba(0,255,136,.03);
+  background-image:linear-gradient(rgba(0,255,136,.06) 1px,transparent 1px);
+  background-size:100% 28px;
+  background-position:0 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  padding:20px 24px 24px;
+  min-height:200px;
+  position:relative;
+  font-family:"Caveat","Patrick Hand","Indie Flower","Segoe UI",cursive;
+  font-size:18px;
+  line-height:28px;
+  color:#1a1a2e;
+  overflow-x:auto;
+}
+/* Red margin line on left (like notebook) */
+.notebook-page::before{
+  content:"";position:absolute;left:20px;top:0;bottom:0;
+  width:1px;background:#f0a0a0;opacity:.4;
+}
+/* Three-hole punch effect */
+.notebook-page::after{
+  content:"";position:absolute;left:8px;top:30px;bottom:30px;width:4px;
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 60px,rgba(0,0,0,.06) 60px,rgba(0,0,0,.06) 64px);
+}
+.notebook-page .nb-title{
+  font-size:26px;font-weight:700;text-align:center;
+  margin-bottom:16px;color:#1a1a2e;
+  text-decoration:underline;text-decoration-color:#1f8f43;
+  text-underline-offset:4px;
+  padding-bottom:4px;
+}
+.notebook-page .nb-section{
+  font-size:20px;font-weight:700;color:#1f8f43;
+  margin-top:18px;margin-bottom:6px;
+  border-bottom:1.5px dashed #c8c4b0;
+  padding-bottom:2px;
+}
+.notebook-page .nb-content{
+  font-size:17px;color:#2a2a3e;margin-bottom:8px;
+}
+.notebook-page .nb-bullet{
+  font-size:17px;color:#2a2a3e;margin:2px 0 2px 16px;
+}
+.notebook-page .nb-bullet::before{
+  content:"→ ";color:#ea580c;font-weight:700;
+}
+.notebook-page .nb-def{
+  font-size:17px;color:#2a2a3e;margin:4px 0;
+}
+.notebook-page .nb-def strong{
+  color:#7c3aed;font-weight:700;
+}
+.notebook-page .nb-highlight{
+  background:linear-gradient(180deg,transparent 55%,#fff3a0 55%);
+  padding:0 2px;
+}
+.notebook-page .nb-date{
+  font-size:14px;color:#888;text-align:right;
+  margin-bottom:10px;font-style:italic;
+}
+.notes-actions{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+
+/* Dark mode notebook */
+[data-theme="dark"] .notebook-page{
+  background:#1a1a14;
+  background-image:linear-gradient(rgba(80,76,60,.2) 1px,transparent 1px);
+  background-size:100% 28px;
+  background-position:0 12px;
+  border-color:#3a3828;
+  color:#e6e0d0;
+}
+[data-theme="dark"] .notebook-page .nb-title{color:#e6e0d0}
+[data-theme="dark"] .notebook-page .nb-section{color:#4ade80;border-color:#3a3828}
+[data-theme="dark"] .notebook-page .nb-content{color:#d0cab8}
+[data-theme="dark"] .notebook-page .nb-bullet{color:#d0cab8}
+[data-theme="dark"] .notebook-page .nb-def{color:#d0cab8}
+
+/* ===================== SETTINGS PANEL ===================== */
+.settings-panel{
+  right:0; left:auto;
+  transform:translateX(100%);
+  width:320px; max-width:88vw;
+  overflow-y:auto;
+  background:rgba(8,24,16,.95);
+  backdrop-filter:blur(16px);
+  border-left:1px solid var(--border-2);
+  box-shadow:-4px 0 24px rgba(0,255,136,.08);
+}
+.settings-panel.show{transform:translateX(0)}
+.settings-section{
+  padding:16px;
+  border-bottom:1px solid var(--border);
+}
+.settings-section h4{
+  margin:0 0 12px; font-size:15px; font-weight:800; color:var(--text);
+}
+.profile-avatar-row{
+  display:flex; align-items:center; gap:12px; margin-bottom:14px;
+}
+.profile-avatar{
+  width:64px; height:64px; border-radius:50%; flex:0 0 auto;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  display:grid; place-items:center; font-size:32px;
+  box-shadow:var(--shadow);
+}
+.profile-avatar-btn{
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:10px; padding:8px 14px; font-size:13px;
+  cursor:pointer; font-family:inherit; color:var(--text);
+  font-weight:700; transition:.18s;
+}
+.profile-avatar-btn:hover{border-color:var(--brand);color:var(--brand)}
+.settings-label{
+  display:block; font-size:12.5px; font-weight:700;
+  color:var(--text-soft); margin:0 0 5px;
+}
+.settings-input{
+  width:100%; padding:10px 12px; border:1.5px solid var(--border);
+  border-radius:10px; background:var(--surface-2); color:var(--text);
+  font-size:14px; font-family:inherit; transition:.2s;
+  margin-bottom:12px; box-sizing:border-box;
+}
+.settings-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.settings-save-btn{
+  width:100%; padding:11px; border:none; border-radius:10px;
+  background:var(--brand); color:#fff; font-weight:800;
+  font-size:14px; cursor:pointer; font-family:inherit; transition:.18s;
+}
+.settings-save-btn:hover{background:var(--brand-2);transform:translateY(-1px)}
+.settings-saved-msg{
+  display:none; text-align:center; margin-top:8px;
+  font-size:13px; font-weight:700; color:var(--brand);
+}
+.settings-saved-msg.show{display:block; animation:fade .3s ease}
+.settings-hint{
+  font-size:12.5px; color:var(--text-soft); line-height:1.5;
+  margin:0 0 10px;
+}
+.settings-hint-small{
+  font-size:11.5px; color:var(--text-mute); line-height:1.5;
+  margin:10px 0 0;
+}
+.mic-allow-btn{
+  width:100%; padding:14px; border:none; border-radius:12px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff; font-weight:800; font-size:15px;
+  cursor:pointer; font-family:inherit; transition:.18s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  box-shadow:var(--shadow);
+}
+.mic-allow-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.mic-allow-btn.testing{background:var(--accent); animation:pulse 1.2s infinite}
+.mic-status{
+  margin-top:10px; padding:8px 12px; border-radius:8px;
+  background:var(--surface-2); font-size:12.5px; font-weight:700;
+  text-align:center; color:var(--text-soft);
+}
+.mic-status.granted{background:var(--brand-soft);color:var(--brand)}
+.mic-status.denied{background:var(--danger-soft);color:var(--danger)}
+.theme-toggle-row{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:14.5px; font-weight:700;
+}
+.switch{
+  position:relative; width:48px; height:26px; display:inline-block;
+}
+.switch input{opacity:0;width:0;height:0}
+.slider{
+  position:absolute; inset:0; background:var(--border-2);
+  border-radius:999px; cursor:pointer; transition:.3s;
+}
+.slider::before{
+  content:""; position:absolute; width:20px; height:20px;
+  left:3px; top:3px; background:#fff; border-radius:50%;
+  transition:.3s;
+}
+.switch input:checked + .slider{background:var(--brand)}
+.switch input:checked + .slider::before{transform:translateX(22px)}
+.settings-about{
+  font-size:12.5px; color:var(--text-soft); line-height:1.6;
+  margin:0;
+}
+
+
+/* ===================== FEATURE GRID ===================== */
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:20px;
+}
+@media(max-width:720px){
+  .feature-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .feature-grid{grid-template-columns:1fr}
+}
+.feature-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px 16px;
+  text-align:center;
+  position:relative;
+  backdrop-filter:blur(12px);
+  transition:.2s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+.feature-card:hover{
+  border-color:var(--border-2);
+  box-shadow:0 4px 24px rgba(0,255,136,.1);
+  transform:translateY(-2px);
+}
+.fc-badge{
+  position:absolute;top:10px;right:10px;
+  background:var(--brand);color:#04120c;
+  font-size:10px;font-weight:900;
+  padding:2px 8px;border-radius:6px;
+}
+.fc-icon{
+  font-size:32px;
+  width:56px;height:56px;
+  display:grid;place-items:center;
+  background:var(--brand-soft);
+  border:1px solid var(--border-2);
+  border-radius:14px;
+}
+.feature-card h3{
+  font-size:15px;font-weight:800;color:var(--text);
+  margin:4px 0 2px;
+}
+.feature-card p{
+  font-size:12px;color:var(--text-soft);
+  margin:0 0 8px;line-height:1.4;
+}
+.fc-btn{
+  background:transparent;
+  border:1px solid var(--brand);
+  color:var(--brand);
+  padding:6px 16px;
+  border-radius:8px;
+  font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:.18s;
+  margin-top:auto;
+}
+.fc-btn:hover{
+  background:var(--brand);
+  color:#04120c;
+  box-shadow:0 0 12px rgba(0,255,136,.2);
+}
+
+/* ===================== STATS SECTION ===================== */
+.stats-section{
+  display:flex;align-items:center;justify-content:space-around;
+  padding:24px 16px;margin-top:24px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);backdrop-filter:blur(12px);
+}
+.stat-item{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.stat-icon{font-size:24px}
+.stat-num{font-size:22px;font-weight:900;color:var(--brand)}
+.stat-label{font-size:12px;color:var(--text-soft);font-weight:600}
+.stat-divider{width:1px;height:40px;background:var(--border-2)}
+@media(max-width:560px){
+  .stats-section{flex-wrap:wrap;gap:16px;padding:16px}
+  .stat-divider{display:none}
+  .stat-item{min-width:40%}
+}
+
+/* ===================== QUOTE SECTION ===================== */
+.quote-section{
+  margin-top:16px;padding:24px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);backdrop-filter:blur(12px);
+  position:relative;text-align:center;
+}
+.quote-mark{
+  font-size:48px;font-weight:900;color:var(--brand);
+  opacity:.4;line-height:1;margin-bottom:-10px;
+}
+.quote-text{font-size:14px;color:var(--text);line-height:1.7;margin:0 0 8px;font-style:italic}
+.quote-author{font-size:12px;color:var(--brand);font-weight:700;margin:0}
+
+/* ===================== MODAL POPUP ===================== */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:rgba(8,24,16,.98);border:1px solid var(--border-2);border-radius:var(--radius);max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.5);animation:modalPop .3s ease}
+[data-theme="light"] .modal-box{background:#fff}
+@keyframes modalPop{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:inherit;z-index:1}
+.modal-header h3{margin:0;font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+.modal-close{background:var(--surface-2);border:1px solid var(--border);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:16px;color:var(--text-soft);transition:.2s;display:grid;place-items:center;flex:0 0 auto}
+.modal-close:hover{background:var(--danger-soft);color:var(--danger);border-color:var(--danger)}
+.modal-body{padding:20px}
+.modal-body .card{background:none!important;border:none!important;box-shadow:none!important;padding:0!important;margin:0!important;backdrop-filter:none!important}
+.modal-body .hint{color:var(--text-soft);font-size:13px;margin:0 0 14px}
+.modal-input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text);font-size:15px;font-family:inherit;resize:vertical;min-height:80px;transition:.2s;margin-bottom:14px;line-height:1.5}
+.modal-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.modal-submit{width:100%;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;transition:.18s}
+.modal-submit:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,255,136,.3)}
+
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="header-row">
+    <div class="logo">ज्ञा</div>
+    <div class="brand-text">
+      <h1>ज्ञान चौपाल</h1>
+      <p>Bihar Board AI Study Assistant</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="historyBtn" title="चैट हिस्ट्री" aria-label="चैट हिस्ट्री">☰</button>
+    <button class="icon-btn" id="settingsBtn" title="सेटिंग्स" aria-label="सेटिंग्स">⚙️</button>
+    <button class="icon-btn" id="themeBtn" title="Light Mode" aria-label="Light Mode">🌙</button>
+  </div>
+</header>
+
+<!-- History Sidebar -->
+<div class="sidebar-bg" id="sidebarBg"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3>चैट हिस्ट्री</h3>
+    <button class="sidebar-close" id="sidebarClose">✕</button>
+  </div>
+  <button class="sidebar-newbtn" id="sidebarNewBtn">+ नई चैट शुरू करें</button>
+  <div class="sidebar-list" id="sidebarList"></div>
+</div>
+
+<!-- ===== Settings Panel (slides from right) ===== -->
+<div class="sidebar-bg" id="settingsBg"></div>
+<div class="sidebar settings-panel" id="settingsPanel">
+  <div class="sidebar-header">
+    <h3>⚙️ सेटिंग्स</h3>
+    <button class="sidebar-close" id="settingsClose">✕</button>
+  </div>
+
+  <!-- Profile Section -->
+  <div class="settings-section">
+    <h4>👤 प्रोफाइल</h4>
+    <div class="profile-avatar-row">
+      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <button class="profile-avatar-btn" id="changeAvatarBtn">📷 बदलें</button>
+    </div>
+    <label class="settings-label">नाम</label>
+    <input type="text" id="profileName" class="settings-input" placeholder="अपना नाम लिखें" maxlength="30">
+    <label class="settings-label">कक्षा</label>
+    <input type="text" id="profileClass" class="settings-input" placeholder="जैसे: Class 11" maxlength="20">
+    <label class="settings-label">स्कूल / शहर</label>
+    <input type="text" id="profileSchool" class="settings-input" placeholder="जैसे: Patna" maxlength="40">
+    <button class="settings-save-btn" id="profileSaveBtn">💾 प्रोफाइल सेव करें</button>
+    <div class="settings-saved-msg" id="profileSavedMsg">✅ सेव हो गया!</div>
+  </div>
+
+  <!-- Voice / Mic Section -->
+  <div class="settings-section">
+    <h4>🎤 वॉइस सेटिंग्स</h4>
+    <p class="settings-hint">माइक्रोफोन Allow करने के लिए नीचे बटन दबाएँ। ब्राउज़र पॉपअप में "Allow" चुनें।</p>
+    <button class="mic-allow-btn" id="micAllowBtn">🎤 माइक्रोफोन Allow करें</button>
+    <div class="mic-status" id="micStatus">⏳ स्टेटस: चेक नहीं हुआ</div>
+    <p class="settings-hint-small">अगर बटन काम न करे, तो ब्राउज़र के address bar में 🔒 lock icon दबाकर Microphone → Allow करें, फिर पेज refresh करें।</p>
+  </div>
+
+  <!-- Theme -->
+  <div class="settings-section">
+    <h4>🌙 थीम</h4>
+    <div class="theme-toggle-row">
+      <span>डार्क मोड</span>
+      <label class="switch">
+        <input type="checkbox" id="settingsThemeToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="settings-section">
+    <h4>ℹ️ जानकारी</h4>
+    <p class="settings-about">ज्ञान चौपाल — Bihar Board के छात्रों के लिए AI Study Assistant।<br>Google Gemini AI द्वारा संचालित।</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="tagline">"ज्ञान ही शक्ति है"</span>
+    <h2><span class="hl">ज्ञान चौपाल</span></h2>
+    <p class="sub">बिहार बोर्ड के छात्रों के लिए एक संपूर्ण AI आधारित लर्निंग प्लेटफॉर्म</p>
+    <div class="hero-tags">
+      <span class="hero-tag">कक्षा 1 से 12 तक</span>
+      <span class="hero-tag">बिहार बोर्ड आधारित</span>
+      <span class="hero-tag">AI संचालित अध्ययन</span>
+      <span class="hero-tag">स्मार्ट तैयारी, बेहतर परिणाम</span>
+    </div>
+    <div class="ready"><span class="status-dot"></span> AI तैयार है — बिना किसी लॉगिन के चलता है</div>
+  </div>
+
+  <!-- ===== Feature Grid ===== -->
+  <div class="feature-grid">
+    <div class="feature-card" data-scroll="askCard">
+      <span class="fc-badge">NEW</span>
+      <span class="fc-icon">💬</span>
+      <h3>Ask Gyan Chaupal</h3>
+      <p>अपना सवाल पूछें और आसान भाषा में समझें।</p>
+      <button class="fc-btn">पूछें →</button>
+    </div>
+    <div class="feature-card" data-scroll="mindmapCard">
+      <span class="fc-badge">NEW</span>
+      <span class="fc-icon">🧠</span>
+      <h3>Mind Map Generator</h3>
+      <p>किसी भी टॉपिक का माइंड मैप बनाएं।</p>
+      <button class="fc-btn">बनाएं →</button>
+    </div>
+    <div class="feature-card" data-scroll="notesCard">
+      <span class="fc-badge">NEW</span>
+      <span class="fc-icon">📝</span>
+      <h3>AI Notes Generator</h3>
+      <p>हाथ से लिखे जैसे नोट्स तुरंत पाएं।</p>
+      <button class="fc-btn">देखें →</button>
+    </div>
+    <div class="feature-card" data-scroll="quizCard">
+      <span class="fc-icon">✅</span>
+      <h3>MCQ Quiz Generator</h3>
+      <p>20 objective questions का quiz बनाएं।</p>
+      <button class="fc-btn">खेलें →</button>
+    </div>
+    <div class="feature-card" data-scroll="formulaCard">
+      <span class="fc-icon">📐</span>
+      <h3>Formula Book</h3>
+      <p>चैप्टर के सभी फॉर्मूले एक जगह।</p>
+      <button class="fc-btn">देखें →</button>
+    </div>
+    <div class="feature-card" data-scroll="classCard">
+      <span class="fc-icon">🎓</span>
+      <h3>कक्षा चुनें (1-12)</h3>
+      <p>अपनी कक्षा और विषय चुनें।</p>
+      <button class="fc-btn">चुनें →</button>
+    </div>
+  </div>
+
+
+  <!-- ===================== MODAL POPUPS ===================== -->
+  <div class="modal-overlay" id="modal-mindmap">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🧠 Mind Map Generator</h3>
+        <button class="modal-close" data-modal="modal-mindmap">✕</button>
+      </div>
+      <div class="modal-body">
+<div class="card" id="mindmapCard">
+    <p class="hint">कोई भी टॉपिक लिखें — AI माइंड मैप बना देगा! (जैसे: "चंपारण सत्याग्रह", "प्रकाश संश्लेषण", "भारतीय संविधान")</p>
+    <div class="mm-input-row">
+      <input type="text" id="mmPrompt" class="mm-input" placeholder="टॉपिक लिखें… (जैसे: चंपारण सत्याग्रह)" maxlength="100">
+      <button id="mmGenBtn" class="mm-gen-btn">🧠 बनाओ</button>
+    </div>
+    <div class="mm-status" id="mmStatus" style="display:none">
+      <div class="mm-spinner"></div>
+      <span>माइंड मैप बन रहा है… कृपया प्रतीक्षा करें</span>
+    </div>
+    <div class="mm-error" id="mmError" style="display:none"></div>
+    <div class="mm-result" id="mmResult" style="display:none">
+      <div class="mm-canvas" id="mmCanvas"></div>
+      <div class="mm-actions">
+        <button id="mmDownloadBtn" class="act">⬇️ इमेज डाउनलोड</button>
+        <button id="mmRegenBtn" class="act">🔄 फिर से बनाओ</button>
+        <button id="mmClearBtn" class="act">🗑️ हटाओ</button>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-notes">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📝 AI Notes Generator</h3>
+        <button class="modal-close" data-modal="modal-notes">✕</button>
+      </div>
+      <div class="modal-body">
+<div class="card" id="notesCard">
+    <p class="hint">Chapter ka naam likhein — AI complete notes bana dega! (जैसे: "चंपारण सत्याग्रह", "प्रकाश संश्लेषण", "भारतीय संविधान")</p>
+    <div class="notes-input-row">
+      <input type="text" id="notesPrompt" class="notes-input" placeholder="Chapter naam लिखें… (जैसे: चंपारण सत्याग्रह)" maxlength="100">
+      <button id="notesGenBtn" class="notes-gen-btn">📝 नोट्स बनाओ</button>
+    </div>
+    <div class="notes-status" id="notesStatus" style="display:none">
+      <div class="notes-spinner"></div>
+      <span>नोट्स बन रहे हैं… कृपया प्रतीक्षा करें</span>
+    </div>
+    <div class="notes-error" id="notesError" style="display:none"></div>
+    <div class="notes-result" id="notesResult" style="display:none">
+      <div class="notebook-page" id="notebookPage"></div>
+      <div class="notes-actions">
+        <button id="notesDownloadBtn" class="act">⬇️ डाउनलोड</button>
+        <button id="notesRegenBtn" class="act">🔄 फिर से बनाओ</button>
+        <button id="notesListenBtn" class="act">🔊 सुनें</button>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-formula">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>📐 Formula Book</h3>
+        <button class="modal-close" data-modal="modal-formula">✕</button>
+      </div>
+      <div class="modal-body">
+<div class="card" id="formulaCard">
+    <p class="hint">Class और Subject चुनें, फिर chapter लिखें — सारे formulas मिल जाएँगे!</p>
+    <div class="fb-input-row">
+      <input type="text" id="fbClass" class="fb-input" placeholder="Class (जैसे: 10)" maxlength="5" style="flex:0 0 80px">
+      <input type="text" id="fbSubject" class="fb-input" placeholder="Subject (जैसे: Physics)" maxlength="20" style="flex:0 0 140px">
+      <input type="text" id="fbChapter" class="fb-input" placeholder="Chapter (जैसे: Light)" maxlength="50">
+      <button id="fbGenBtn" class="fb-gen-btn">📐 फॉर्मूले देखो</button>
+    </div>
+    <div class="fb-status" id="fbStatus" style="display:none">
+      <div class="fb-spinner"></div>
+      <span>फॉर्मूले लाए जा रहे हैं…</span>
+    </div>
+    <div class="fb-error" id="fbError" style="display:none"></div>
+    <div class="fb-result" id="fbResult" style="display:none">
+      <div class="formula-page" id="formulaPage"></div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-quiz">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>✅ MCQ Quiz Generator</h3>
+        <button class="modal-close" data-modal="modal-quiz">✕</button>
+      </div>
+      <div class="modal-body">
+<div class="card" id="quizCard">
+    <p class="hint">Class, Subject और Topic लिखें — AI 20 objective questions बनाएगा!</p>
+    <div class="quiz-input-row">
+      <input type="text" id="quizClass" class="quiz-input" placeholder="Class (जैसे: 10)" maxlength="5" style="flex:0 0 80px">
+      <input type="text" id="quizSubject" class="quiz-input" placeholder="Subject (जैसे: Science)" maxlength="20" style="flex:0 0 120px">
+      <input type="text" id="quizTopic" class="quiz-input" placeholder="Topic (जैसे: Light)" maxlength="50">
+      <button id="quizGenBtn" class="quiz-gen-btn">✅ क्विज़ बनाओ</button>
+    </div>
+    <div class="quiz-status" id="quizStatus" style="display:none">
+      <div class="quiz-spinner"></div>
+      <span>क्विज़ बन रहा है… कृपया प्रतीक्षा करें</span>
+    </div>
+    <div class="quiz-error" id="quizError" style="display:none"></div>
+    <div class="quiz-result" id="quizResult" style="display:none">
+      <div class="quiz-header" id="quizHeader"></div>
+      <div class="quiz-questions" id="quizQuestions"></div>
+      <div class="quiz-actions" id="quizActions" style="display:none">
+        <button id="quizSubmitBtn" class="quiz-submit-btn">📊 रिजल्ट देखो</button>
+      </div>
+      <div class="quiz-score" id="quizScore" style="display:none"></div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-ask">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>💬 Ask Gyan Chaupal</h3>
+        <button class="modal-close" data-modal="modal-ask">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="hint">Hindi, English या Hinglish — किसी भी भाषा में सवाल पूछें।</p>
+        <div class="err-banner" id="askModalError"></div>
+        <textarea id="askModalInput" class="modal-input" placeholder="अपना सवाल यहाँ लिखें…" rows="4"></textarea>
+        <button id="askModalBtn" class="modal-submit">पूछें →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="classCard">
+    <div class="step"><div class="num">1</div><h3>अपनी कक्षा चुनें</h3></div>
+    <p class="hint">आप किस कक्षा में पढ़ते हैं?</p>
+    <div class="opts cls" id="classList"></div>
+  </div>
+
+  <div class="card" id="subjectCard" style="display:none">
+    <div class="step"><div class="num">2</div><h3>अपना विषय चुनें</h3></div>
+    <p class="hint" id="subjectHint">कक्षा के अनुसार विषय चुनें</p>
+    <div class="opts subj" id="subjectList"></div>
+  </div>
+
+  <div class="card" id="askCard" style="display:none">
+    <div class="step"><div class="num">3</div><h3>अपना सवाल पूछें</h3></div>
+    <p class="hint">Hindi, English या Hinglish में लिख सकते हैं</p>
+    <div class="err-banner" id="errBanner"></div>
+  </div>
+
+  <section id="chatSection">
+    <div class="chat-box" id="chatBox"></div>
+  </section>
+
+  <!-- ===== Stats Section ===== -->
+  <div class="stats-section">
+    <div class="stat-item">
+      <span class="stat-icon">👥</span>
+      <span class="stat-num">50K+</span>
+      <span class="stat-label">Students</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-icon">📚</span>
+      <span class="stat-num">25K+</span>
+      <span class="stat-label">Notes</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-icon">📝</span>
+      <span class="stat-num">15K+</span>
+      <span class="stat-label">Tests</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-icon">💬</span>
+      <span class="stat-num">4.5 लाख+</span>
+      <span class="stat-label">Answers</span>
+    </div>
+  </div>
+
+  <!-- ===== Quote Section ===== -->
+  <div class="quote-section">
+    <div class="quote-mark">"</div>
+    <p class="quote-text">शिक्षा ही वह शस्त्र है जिससे आप दुनिया बदल सकते हैं। ज्ञान कोई भी चीज़ हो सकती है, बस सीखने की इच्छा होनी चाहिए।</p>
+    <p class="quote-author">— ज्ञान का संदेश</p>
+  </div>
+
+  <footer>
+    ज्ञान चौपाल • Bihar Board AI Study Assistant • पढ़ाई का अपना AI साथी
+  </footer>
+</div>
+
+<div class="composer" id="composer" style="display:none">
+  <div class="composer-row">
+    <textarea id="qInput" placeholder="यहाँ सवाल लिखें… या 🎤 दबाकर बोलें" rows="1" aria-label="सवाल"></textarea>
+    <button id="micBtn" title="बोलकर सवाल पूछें" aria-label="Voice Input">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+    </button>
+    <button id="askBtn">पूछें</button>
+    <button id="newBtn" title="नई चैट">नई चैट</button>
+  </div>
+  <div class="composer-meta">
+    <div class="ctx">
+      <span class="chip" id="ctxClass">Class —</span>
+      <span class="chip" id="ctxSubject">Subject —</span>
+    </div>
+    <span>Google Gemini AI</span>
+  </div>
+</div>
+
+<!-- ===== Mobile Bottom Navigation ===== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bn-item active" data-target="hero">
+    <span class="bi">🏠</span><span class="bt">Home</span>
+  </button>
+  <button class="bn-item" data-target="classCard">
+    <span class="bi">🤖</span><span class="bt">Ask AI</span>
+  </button>
+  <button class="bn-item" data-target="mindmapCard">
+    <span class="bi">🧠</span><span class="bt">Mind Map</span>
+  </button>
+  <button class="bn-item" data-target="notesCard">
+    <span class="bi">📝</span><span class="bt">Notes</span>
+  </button>
+  <button class="bn-item" data-target="formulaCard">
+    <span class="bi">📐</span><span class="bt">Formula</span>
+  </button>
+  <button class="bn-item" data-target="quizCard">
+    <span class="bi">✅</span><span class="bt">Quiz</span>
+  </button>
+</nav>
+
+<script>
+"use strict";
+
+/* ===================== 3 API KEYS (Round-Robin) ===================== */
+/* API keys (obfuscated) — decoded at runtime */
+const _k = [
+  "QVEuQWI4Uk42SnZ6V3BVc3g1VVlzSG5aejhkRGJ6NG9HOU95VVVST1FhS095RkZzU2I0X1E=",
+  "QVEuQWI4Uk42SmZKZjNsbkZYUkxmX2RUcjZkQnVlUjYxa2JPOV9hSFpzY2FadDhXemtTVlE=",
+  "QVEuQWI4Uk42S2duMFZBRVNQNnFIc2FqUENzNzJqTFduZW5icDZVLXdXZ2VwVDV1bUQyemc="
+];
+const GEMINI_KEYS = _k.map(s => atob(s));
+const GEMINI_MODEL = "gemini-3.5-flash";
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=";
+
+/* Round-robin counter — हर सवाल अगली key पर जाएगा */
+let keyIndex = 0;
+
+/* यह function अगली key देता है (round-robin) */
+function getNextKey(){
+  const key = GEMINI_KEYS[keyIndex % GEMINI_KEYS.length];
+  keyIndex++;
+  return key;
+}
+
+const SUBJECTS = {
+  "1-5":  ["Hindi","English","Mathematics","EVS"],
+  "6-8":  ["Hindi","English","Mathematics","Science","Social Science"],
+  "9-10": ["Hindi","English","Mathematics","Science","Social Science"],
+  "11-12":["Physics","Chemistry","Mathematics","Biology","Hindi","English","Other Subjects"]
+};
+
+/* ===================== STATE ===================== */
+const MAX_SAVED_CHATS = 10;
+
+const state = {
+  selectedClass:null,
+  selectedSubject:null,
+  history:[],
+  busy:false,
+  currentChatId:null
+};
+
+/* ===================== CHAT STORAGE ===================== */
+function getSavedChats(){
+  try{ return JSON.parse(localStorage.getItem("gc_chats")||"[]"); }catch(e){ return []; }
+}
+function saveChats(arr){
+  // केवल आखिरी 10 चैट्स रखें
+  if(arr.length > MAX_SAVED_CHATS){
+    arr = arr.slice(arr.length - MAX_SAVED_CHATS);
+  }
+  localStorage.setItem("gc_chats", JSON.stringify(arr));
+}
+function saveCurrentChat(){
+  if(state.history.length === 0) return;
+  const chats = getSavedChats();
+  const firstUserMsg = state.history.find(m=>m.role==="user");
+  const title = firstUserMsg ? firstUserMsg.content.slice(0,40) : "चैट";
+  const chatData = {
+    id: state.currentChatId || Date.now().toString(),
+    title: title,
+    messages: state.history,
+    class: state.selectedClass,
+    subject: state.selectedSubject,
+    time: new Date().toLocaleTimeString("hi-IN",{hour:"2-digit",minute:"2-digit"}),
+    date: new Date().toLocaleDateString("hi-IN",{day:"2-digit",month:"short"})
+  };
+  const idx = chats.findIndex(c=>c.id===chatData.id);
+  if(idx >= 0){
+    chats[idx] = chatData;
+  } else {
+    chats.push(chatData);
+  }
+  saveChats(chats);
+  state.currentChatId = chatData.id;
+  renderSidebar();
+}
+function deleteChat(id){
+  let chats = getSavedChats().filter(c=>c.id!==id);
+  saveChats(chats);
+  if(state.currentChatId === id){
+    newChat();
+  }
+  renderSidebar();
+}
+function loadChat(id){
+  const chats = getSavedChats();
+  const chat = chats.find(c=>c.id===id);
+  if(!chat) return;
+  closeSidebar();
+  state.currentChatId = chat.id;
+  state.history = chat.messages.map(m=>({role:m.role,content:m.content}));
+  // class और subject set करें
+  if(chat.class){
+    selectClass(chat.class);
+    if(chat.subject){
+      setTimeout(()=>{
+        selectSubject(chat.subject);
+        // चैट render करें
+        const box = document.getElementById("chatBox");
+        box.innerHTML = "";
+        chat.messages.forEach(m=>{
+          const {bub} = addMsg(m.role, m.content);
+          if(m.role === "assistant"){
+            // actions बटन नहीं दोहराएँगे पुराने messages पर (सिर्फ अंतिम जवाब पर)
+          }
+        });
+        // अंतिम AI जवाब पर actions जोड़ें
+        const lastAi = chat.messages[chat.messages.length-1];
+        if(lastAi && lastAi.role === "assistant"){
+          const allBubbles = box.querySelectorAll(".msg.ai .bubble");
+          if(allBubbles.length > 0){
+            const lastBubble = allBubbles[allBubbles.length-1];
+            addAnswerActions(lastBubble, lastAi.content);
+          }
+        }
+        document.getElementById("qInput").focus();
+      }, 100);
+    }
+  }
+  renderSidebar();
+}
+function renderSidebar(){
+  const list = document.getElementById("sidebarList");
+  const chats = getSavedChats();
+  list.innerHTML = "";
+  if(chats.length === 0){
+    list.innerHTML = '<div class="sidebar-empty">अभी कोई चैट save नहीं है।<br>सवाल पूछें और यहाँ दिखेगा।</div>';
+    return;
+  }
+  // नए से पुराने क्रम में
+  chats.slice().reverse().forEach(c=>{
+    const item = document.createElement("div");
+    item.className = "chat-item" + (c.id===state.currentChatId ? " active" : "");
+    item.innerHTML = '<div class="chat-item-title">'+escapeHtml(c.title)+'</div>'+
+      '<div class="chat-item-meta"><span>Class '+c.class+'</span>•<span>'+c.subject+'</span>•<span>'+c.date+' '+c.time+'</span>'+
+      '<button class="chat-item-del" data-id="'+c.id+'" title="डिलीट करें">🗑️</button></div>';
+    item.addEventListener("click",(e)=>{
+      if(e.target.classList.contains("chat-item-del")) return;
+      loadChat(c.id);
+    });
+    const delBtn = item.querySelector(".chat-item-del");
+    delBtn.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      if(confirm("यह चैट डिलीट करें?")){
+        deleteChat(c.id);
+      }
+    });
+    list.appendChild(item);
+  });
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">");
+}
+function openSidebar(){
+  renderSidebar();
+  document.getElementById("sidebarBg").classList.add("show");
+  document.getElementById("sidebar").classList.add("show");
+}
+function closeSidebar(){
+  document.getElementById("sidebarBg").classList.remove("show");
+  document.getElementById("sidebar").classList.remove("show");
+}
+
+/* ===================== STORAGE ===================== */
+function loadTheme(){
+  const t = localStorage.getItem("gc_theme") || "dark";
+  applyTheme(t);
+}
+function applyTheme(t){
+  if(t==="light"){
+    document.documentElement.setAttribute("data-theme","light");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  document.getElementById("themeBtn").textContent = t==="dark" ? "🌙" : "☀️";
+  document.getElementById("themeBtn").title = t==="dark" ? "Light Mode" : "Dark Mode";
+}
+
+function init(){
+  loadTheme();
+  renderClasses();
+  initMindMap();
+  initNotesGenerator();
+  initFormulaBook();
+  initQuizGenerator();
+
+  /* ===== MODAL POPUP SYSTEM ===== */
+  function openModal(id){
+    const m=document.getElementById(id);
+    if(m){
+      m.classList.add("show");
+      document.body.style.overflow="hidden";
+      setTimeout(()=>{
+        const inp=m.querySelector("input,textarea");
+        if(inp) inp.focus();
+      },100);
+    }
+  }
+  function closeModal(id){
+    const m=document.getElementById(id);
+    if(m){m.classList.remove("show");document.body.style.overflow="";}
+  }
+  document.querySelectorAll(".modal-overlay").forEach(ov=>{
+    ov.addEventListener("click",(e)=>{ if(e.target===ov) closeModal(ov.id); });
+  });
+  document.querySelectorAll(".modal-close").forEach(btn=>{
+    btn.addEventListener("click",()=>{ closeModal(btn.dataset.modal); });
+  });
+  document.addEventListener("keydown",(e)=>{
+    if(e.key==="Escape"){
+      document.querySelectorAll(".modal-overlay.show").forEach(m=>closeModal(m.id));
+    }
+  });
+
+  /* Feature card click → open modal (or scroll for classCard) */
+  const modalMap={
+    "askCard":"modal-ask",
+    "mindmapCard":"modal-mindmap",
+    "notesCard":"modal-notes",
+    "quizCard":"modal-quiz",
+    "formulaCard":"modal-formula"
+  };
+  document.querySelectorAll(".feature-card").forEach(card=>{
+    card.addEventListener("click",()=>{
+      const target=card.dataset.scroll;
+      const modalId=modalMap[target];
+      if(modalId){
+        openModal(modalId);
+      } else if(target){
+        const el=document.getElementById(target);
+        if(el){ el.scrollIntoView({behavior:"smooth",block:"center"}); }
+      }
+    });
+  });
+
+  /* Ask Gyan Chaupal modal — submit */
+  document.getElementById("askModalInput").addEventListener("keydown",(e)=>{
+    if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); document.getElementById("askModalBtn").click(); }
+  });
+  document.getElementById("askModalBtn").addEventListener("click",()=>{
+    const val=document.getElementById("askModalInput").value.trim();
+    if(!val) return;
+    const errEl=document.getElementById("askModalError");
+    if(!state.selectedClass || !state.selectedSubject){
+      errEl.textContent="पहले कक्षा और विषय चुनें! (नीचे scroll करके Class चुनें)";
+      errEl.classList.add("show");
+      return;
+    }
+    errEl.classList.remove("show");
+    document.getElementById("qInput").value=val;
+    document.getElementById("askModalInput").value="";
+    closeModal("modal-ask");
+    sendQuestion();
+  });
+
+  /* theme toggle */
+  document.getElementById("themeBtn").addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme");
+    const next = cur==="dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem("gc_theme", next);
+  });
+
+  const qInput = document.getElementById("qInput");
+  qInput.addEventListener("input", autoGrow);
+  qInput.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendQuestion(); }
+  });
+  document.getElementById("askBtn").addEventListener("click", sendQuestion);
+  document.getElementById("newBtn").addEventListener("click", newChat);
+
+  /* ===== ⚙️ SETTINGS PANEL ===== */
+  const settingsPanel=document.getElementById("settingsPanel");
+  const settingsBg=document.getElementById("settingsBg");
+  const settingsBtn=document.getElementById("settingsBtn");
+  const settingsClose=document.getElementById("settingsClose");
+
+  function openSettings(){
+    settingsPanel.classList.add("show");
+    settingsBg.classList.add("show");
+    loadProfile();
+    checkMicPermission();
+  }
+  function closeSettings(){
+    settingsPanel.classList.remove("show");
+    settingsBg.classList.remove("show");
+  }
+  settingsBtn.addEventListener("click", openSettings);
+  settingsClose.addEventListener("click", closeSettings);
+  settingsBg.addEventListener("click", closeSettings);
+
+  /* ===== Profile load/save ===== */
+  const AVATAR_EMOJIS=["👤","🧑","👨","👩","🧒","👦","👧","👨‍🎓","👩‍🎓","🤓","😎","🧑‍💻"];
+  let avatarIdx=0;
+
+  function loadProfile(){
+    try{
+      const p=JSON.parse(localStorage.getItem("gc_profile")||"{}");
+      document.getElementById("profileName").value=p.name||"";
+      document.getElementById("profileClass").value=p.cls||"";
+      document.getElementById("profileSchool").value=p.school||"";
+      avatarIdx=p.avatarIdx||0;
+      document.getElementById("profileAvatar").textContent=AVATAR_EMOJIS[avatarIdx%AVATAR_EMOJIS.length];
+      /* theme toggle sync */
+      const cur=document.documentElement.getAttribute("data-theme");
+      document.getElementById("settingsThemeToggle").checked=(cur==="dark");
+    }catch(e){}
+  }
+
+  document.getElementById("changeAvatarBtn").addEventListener("click", ()=>{
+    avatarIdx=(avatarIdx+1)%AVATAR_EMOJIS.length;
+    document.getElementById("profileAvatar").textContent=AVATAR_EMOJIS[avatarIdx];
+  });
+
+  document.getElementById("profileSaveBtn").addEventListener("click", ()=>{
+    const p={
+      name:document.getElementById("profileName").value.trim(),
+      cls:document.getElementById("profileClass").value.trim(),
+      school:document.getElementById("profileSchool").value.trim(),
+      avatarIdx:avatarIdx
+    };
+    localStorage.setItem("gc_profile", JSON.stringify(p));
+    const msg=document.getElementById("profileSavedMsg");
+    msg.classList.add("show");
+    setTimeout(()=>msg.classList.remove("show"), 2000);
+  });
+
+  /* theme toggle from settings */
+  document.getElementById("settingsThemeToggle").addEventListener("change", (e)=>{
+    const next=e.target.checked?"dark":"light";
+    applyTheme(next);
+    localStorage.setItem("gc_theme", next);
+  });
+
+  /* ===== 🎤 Mic Allow button — mic permission request karta hai ===== */
+  document.getElementById("micAllowBtn").addEventListener("click", async ()=>{
+    const micBtn=document.getElementById("micAllowBtn");
+    const micStatus=document.getElementById("micStatus");
+    micBtn.classList.add("testing");
+    micBtn.innerHTML="🎤 माइक चेक हो रहा है…";
+    micStatus.className="mic-status";
+    micStatus.textContent="⏳ माइक चेक हो रहा है…";
+
+    /* navigator.permissions se direct check */
+    if(navigator.permissions){
+      try{
+        const result=await navigator.permissions.query({name:"microphone"});
+        if(result.state==="granted"){
+          micStatus.className="mic-status granted";
+          micStatus.textContent="✅ माइक Allow है! अब बोलकर सवाल पूछ सकते हैं।";
+          micBtn.classList.remove("testing");
+          micBtn.innerHTML="🎤 माइक्रोफोन Allow है";
+          return;
+        }
+      }catch(e){}
+    }
+
+    /* fallback: getUserMedia se try karo — isse browser popup aata hai */
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      try{
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        stream.getTracks().forEach(t=>t.stop());
+        micStatus.className="mic-status granted";
+        micStatus.textContent="✅ माइक Allow है! अब बोलकर सवाल पूछ सकते हैं।";
+        micBtn.classList.remove("testing");
+        micBtn.innerHTML="🎤 माइक्रोफोन Allow है";
+      }catch(err){
+        micStatus.className="mic-status denied";
+        if(err.name==="NotAllowedError"){
+          micStatus.textContent="❌ माइक Block है। Address bar में 🔒 दबाकर Microphone → Allow करें, फिर refresh करें।";
+        }else if(err.name==="NotFoundError"){
+          micStatus.textContent="❌ इस device में microphone नहीं मिला।";
+        }else{
+          micStatus.textContent="❌ समस्या: "+(err.name||"error");
+        }
+        micBtn.classList.remove("testing");
+        micBtn.innerHTML="🎤 फिर से कोशिश करें";
+      }
+    }else{
+      micStatus.className="mic-status denied";
+      micStatus.textContent="❌ इस browser में mic support नहीं है। Chrome या Edge try करें।";
+      micBtn.classList.remove("testing");
+      micBtn.innerHTML="🎤 Browser Support नहीं करता";
+    }
+  });
+
+  /* mic permission status check (without popup) */
+  async function checkMicPermission(){
+    if(navigator.permissions){
+      try{
+        const result=await navigator.permissions.query({name:"microphone"});
+        const micStatus=document.getElementById("micStatus");
+        const micBtn=document.getElementById("micAllowBtn");
+        if(result.state==="granted"){
+          micStatus.className="mic-status granted";
+          micStatus.textContent="✅ माइक Allow है!";
+          micBtn.innerHTML="🎤 माइक्रोफोन Allow है";
+        }else if(result.state==="denied"){
+          micStatus.className="mic-status denied";
+          micStatus.textContent="❌ माइक Block है। Address bar 🔒 → Microphone → Allow करें।";
+        }else{
+          micStatus.textContent="⏳ माइक अभी Allow नहीं है। बटन दबाकर Allow करें।";
+        }
+      }catch(e){}
+    }
+  }
+
+  /* ===== 🎤 Voice Input: बोलकर सवाल पूछें ===== */
+  const micBtn=document.getElementById("micBtn");
+  let recog=null, isRecording=false;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    micBtn.addEventListener("click", async ()=>{
+      if(isRecording){ recog.stop(); return; }
+
+      /* Pehle check karo ki mic permission hai ya nahi */
+      let micReady=false;
+      if(navigator.permissions){
+        try{
+          const result=await navigator.permissions.query({name:"microphone"});
+          if(result.state==="granted"){ micReady=true; }
+        }catch(e){}
+      }
+
+      /* Agar permission prompt state mein hai, getUserMedia se request karo */
+      if(!micReady && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        try{
+          const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+          stream.getTracks().forEach(t=>t.stop());
+          micReady=true;
+        }catch(err){
+          if(err.name==="NotAllowedError"){
+            /* Permission deny hua — bada clear message dikhao */
+            showMicPermissionGuide();
+            return;
+          }
+        }
+      }
+
+      /* Ab recording start karo */
+      recog=new SR();
+      recog.lang="hi-IN";
+      recog.interimResults=true;
+      recog.continuous=false;
+      micBtn.classList.add("recording");
+      micBtn.innerHTML='<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+      isRecording=true;
+      const qInput=document.getElementById("qInput");
+      let finalText=qInput.value;
+      recog.onresult=(e)=>{
+        let interim="";
+        for(let i=e.resultIndex;i<e.results.length;i++){
+          const tr=e.results[i][0].transcript;
+          if(e.results[i].isFinal){ finalText+=(finalText&&!finalText.endsWith(" ")?" ":"")+tr; }
+          else{ interim+=tr; }
+        }
+        qInput.value=finalText+interim;
+        autoGrow();
+      };
+      recog.onerror=(ev)=>{
+        if(ev.error==="not-allowed"){
+          showMicPermissionGuide();
+        }else if(ev.error!=="aborted"&&ev.error!=="no-speech"){
+          showError("Voice input में समस्या: "+ev.error);
+        }
+      };
+      recog.onend=()=>{
+        micBtn.classList.remove("recording");
+        micBtn.innerHTML='<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>';
+        isRecording=false;
+        qInput.focus();
+      };
+      recog.start();
+    });
+  }else{
+    /* Browser support नहीं करता */
+    micBtn.style.opacity=".5";
+    micBtn.title="आपका browser voice input support नहीं करता। Chrome या Edge में try करें।";
+    micBtn.addEventListener("click", ()=>{
+      showError("आपका browser voice input support नहीं करता। कृपया Chrome या Edge में open करें।");
+    });
+  }
+  document.getElementById("historyBtn").addEventListener("click", openSidebar);
+  document.getElementById("sidebarClose").addEventListener("click", closeSidebar);
+  document.getElementById("sidebarBg").addEventListener("click", closeSidebar);
+  document.getElementById("sidebarNewBtn").addEventListener("click", ()=>{ closeSidebar(); newChat(); });
+
+  /* AI hero scroll button → class card पर focus */
+  document.getElementById("aiScrollBtn").addEventListener("click", ()=>{
+    const el = document.getElementById("classCard");
+    el.scrollIntoView({behavior:"smooth", block:"start"});
+    el.style.transition="box-shadow .4s";
+    el.style.boxShadow="0 0 0 3px var(--brand)";
+    setTimeout(()=>{ el.style.boxShadow=""; }, 1200);
+  });
+
+  /* To-Do */
+  const ti = document.getElementById("todoInput");
+  document.getElementById("todoAddBtn").addEventListener("click", ()=>{
+    addTask(ti.value); ti.value=""; ti.focus();
+  });
+  ti.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter"){ addTask(ti.value); ti.value=""; }
+  });
+  renderTodo();
+  renderProgress();
+
+  /* Bottom nav */
+  document.querySelectorAll('.bn-item').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = btn.dataset.target;
+      const el = document.getElementById(target);
+      if(el){
+        el.scrollIntoView({behavior:"smooth", block:"start"});
+      }
+      document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
+/* ===================== RENDER ===================== */
+function renderClasses(){
+  const wrap = document.getElementById("classList");
+  wrap.innerHTML = "";
+  for(let i=1;i<=12;i++){
+    const el = document.createElement("div");
+    el.className="opt"; el.textContent="Class "+i; el.dataset.cls=i;
+    el.addEventListener("click",()=>selectClass(i));
+    wrap.appendChild(el);
+  }
+}
+
+function classRange(c){
+  if(c<=5) return "1-5";
+  if(c<=8) return "6-8";
+  if(c<=10) return "9-10";
+  return "11-12";
+}
+
+function selectClass(c){
+  state.selectedClass = c;
+  document.querySelectorAll("#classList .opt").forEach(o=>{
+    o.classList.toggle("active", +o.dataset.cls===c);
+  });
+  const range = classRange(c);
+  const subs = SUBJECTS[range];
+  const sl = document.getElementById("subjectList");
+  sl.innerHTML="";
+  subs.forEach(s=>{
+    const el=document.createElement("div");
+    el.className="opt"; el.textContent=s; el.dataset.sub=s;
+    el.addEventListener("click",()=>selectSubject(s));
+    sl.appendChild(el);
+  });
+  document.getElementById("subjectHint").textContent = "कक्षा "+c+" के अनुसार विषय";
+  document.getElementById("subjectCard").style.display="block";
+  state.selectedSubject=null;
+  document.getElementById("askCard").style.display="none";
+  document.getElementById("composer").style.display="none";
+  document.getElementById("chatSection").classList.remove("show");
+  updateCtxMeta();
+}
+
+function selectSubject(s){
+  state.selectedSubject=s;
+  document.querySelectorAll("#subjectList .opt").forEach(o=>{
+    o.classList.toggle("active", o.dataset.sub===s);
+  });
+  document.getElementById("askCard").style.display="block";
+  document.getElementById("composer").style.display="block";
+  document.getElementById("chatSection").classList.add("show");
+  updateCtxMeta();
+  document.getElementById("qInput").focus();
+  /* ===== Auto mic permission request (background) ===== */
+  /* Pehli baar chat khulte hi mic permission maang lega,
+     taaki jab student 🎤 dabaye to mic turant on ho */
+  preRequestMicPermission();
+}
+
+/* Mic permission pehle se request karo (background mein) */
+function preRequestMicPermission(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  if(navigator.permissions){
+    navigator.permissions.query({name:"microphone"}).then(result=>{
+      if(result.state==="prompt"){
+        /* Permission abhi maangi nahi gayi — request karo */
+        navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+          stream.getTracks().forEach(t=>t.stop());
+        }).catch(()=>{});
+      }
+    }).catch(()=>{
+      /* permissions API na chale to direct try karo */
+      navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+        stream.getTracks().forEach(t=>t.stop());
+      }).catch(()=>{});
+    });
+  }else{
+    navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+      stream.getTracks().forEach(t=>t.stop());
+    }).catch(()=>{});
+  }
+}
+
+function updateCtxMeta(){
+  document.getElementById("ctxClass").textContent = state.selectedClass? "Class "+state.selectedClass : "Class —";
+  document.getElementById("ctxSubject").textContent = state.selectedSubject || "Subject —";
+}
+
+/* ===================== CHAT ===================== */
+function autoGrow(){
+  const t=document.getElementById("qInput");
+  t.style.height="auto";
+  t.style.height=Math.min(t.scrollHeight,180)+"px";
+}
+
+function addMsg(role, content){
+  const box=document.getElementById("chatBox");
+  const m=document.createElement("div");
+  m.className="msg "+(role==="user"?"user":"ai");
+
+  const av=document.createElement("div");
+  av.className="av";
+  av.textContent = role==="user" ? "🧑" : "🤖";
+
+  const bub=document.createElement("div");
+  bub.className="bubble";
+  bub.innerHTML = renderMd(content);
+
+  m.appendChild(av); m.appendChild(bub);
+  box.appendChild(m);
+  box.scrollTop = box.scrollHeight;
+  return {m, bub};
+}
+
+function renderMd(text){
+  let t = text;
+  t = t.replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">");
+  t = t.replace(/```([\s\S]*?)```/g, (m,p1)=>"<pre>"+p1.replace(/^\n/,"")+"</pre>");
+  t = t.replace(/`([^`]+)`/g,"<code>$1</code>");
+  t = t.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  const lines = t.split("\n");
+  let html=""; let inUl=false, inOl=false;
+  for(const ln of lines){
+    const ul = ln.match(/^\s*[-•]\s+(.*)/);
+    const ol = ln.match(/^\s*\d+[.)]\s+(.*)/);
+    if(ul){
+      if(inOl){html+="</ol>";inOl=false;}
+      if(!inUl){html+="<ul>";inUl=true;}
+      html+="<li>"+ul[1]+"</li>";
+    } else if(ol){
+      if(inUl){html+="</ul>";inUl=false;}
+      if(!inOl){html+="<ol>";inOl=true;}
+      html+="<li>"+ol[1]+"</li>";
+    } else {
+      if(inUl){html+="</ul>";inUl=false;}
+      if(inOl){html+="</ol>";inOl=false;}
+      if(ln.trim()===""){ html+="<p></p>"; }
+      else html += (html.endsWith("</p>")||html===""?"":"<br>") + ln;
+    }
+  }
+  if(inUl)html+="</ul>";
+  if(inOl)html+="</ol>";
+  html = html.replace(/<br><\/p>/g,"</p>").replace(/<p><\/p>/g,"<br>");
+  return html;
+}
+
+function showError(msg){
+  const b=document.getElementById("errBanner");
+  b.textContent="⚠️ "+msg;
+  b.classList.add("show");
+  setTimeout(()=>b.classList.remove("show"), 8000);
+}
+
+/* ===== Mic permission guide — bada clear message ===== */
+function showMicPermissionGuide(){
+  /* Pehle purana guide hatao */
+  const old=document.getElementById("micGuideOverlay");
+  if(old) old.remove();
+
+  const overlay=document.createElement("div");
+  overlay.id="micGuideOverlay";
+  overlay.style.cssText="position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .3s ease";
+  overlay.innerHTML=`
+    <div style="background:var(--surface);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center;box-shadow:var(--shadow-lg);animation:pop .25s ease">
+      <div style="font-size:48px;margin-bottom:12px">🎤</div>
+      <h3 style="font-size:18px;font-weight:800;margin:0 0 10px;color:var(--text)">माइक चालू करने के लिए</h3>
+      <p style="font-size:14px;color:var(--text-soft);line-height:1.6;margin:0 0 16px">
+        ऊपर <strong>address bar</strong> में 🔒 पर टैप करें<br>
+        फिर <strong>Microphone → Allow</strong> चुनें<br>
+        उसके बाद पेज <strong>refresh</strong> करें
+      </p>
+      <div style="background:var(--brand-soft);border-radius:12px;padding:12px;margin-bottom:16px">
+        <p style="font-size:13px;color:var(--brand);font-weight:700;margin:0">
+          एक बार Allow करने के बाद<Br>बार-बार नहीं पूछेगा ✅
+        </p>
+      </div>
+      <button id="micGuideClose" style="width:100%;padding:13px;border:none;border-radius:12px;background:var(--brand);color:#fff;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit">
+        समझ गया
+      </button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById("micGuideClose").addEventListener("click",()=>{
+    overlay.remove();
+  });
+  overlay.addEventListener("click",(e)=>{
+    if(e.target===overlay) overlay.remove();
+  });
+}
+
+function setBusy(b){
+  state.busy=b;
+  document.getElementById("askBtn").disabled=b;
+  document.getElementById("qInput").disabled=b;
+}
+
+/* ===================== PROMPT ===================== */
+function systemPromptText(){
+  const c = state.selectedClass;
+  const s = state.selectedSubject;
+  return `तुम "ज्ञान चौपाल" हो — Bihar Board (BSEB) के students के लिए एक AI Study Assistant और teacher हो।
+
+STUDENT CONTEXT:
+- Class: ${c}
+- Subject: ${s}
+
+तुम्हारे RULES (कड़ाई से follow करो):
+1. जवाब देने की भाषा student के सवाल की भाषा से match करो:
+   - Devanagari/हिंदी सवाल → पूरी तरह हिंदी जवाब (देवनागरी में)
+   - Roman Hindi (Hinglish like "kya hai") → Simple Hinglish जवाब
+   - English सवाल → English जवाब
+2. जवाब हमेशा Class ${c} के student के level के अनुसार हो। छोटी कक्षा (1-5) के लिए बहुत simple भाषा, बड़ी कक्षा (11-12) के लिए detailed जवाब।
+3. Subject: ${s} के अनुसार ही जवाब दो।
+4. MATH: पहले formula, फिर step-by-step solution, फिर **Final Answer** अलग से लिखो।
+5. SCIENCE: आसान explanation, real-life examples, और important formulas/equations शामिल करो।
+6. THEORY: direct answer, फिर short explanation। बहुत लंबा मत बनाओ।
+7. जवाब clean और structured रखो — **bold** से important points, और ज़रूरत हो तो bullet list (-) या numbered list (1.) use करो।
+8. गलत जानकारी कभी invent मत करो। अगर पक्का नहीं पता तो सच बताओ।
+9. Student को friendly लेकिन educational तरीके से जवाब दो।
+10. अगर सवाल subject/class से बाहर हो तो बताओ कि यह इस subject में नहीं आता, फिर भी best effort से help करो।`;
+}
+
+/* ===================== GEMINI API CALL (Round-Robin + Auto-Retry) ===================== */
+async function callGemini(chatMessages){
+  const sysText = systemPromptText();
+
+  const contents = chatMessages.map(m=>({
+    role: m.role==="user" ? "user" : "model",
+    parts:[{text:m.content}]
+  }));
+
+  const body = {
+    contents: contents,
+    systemInstruction: { parts:[{text:sysText}] },
+    generationConfig: { temperature:0.5, maxOutputTokens:2000 }
+  };
+
+  /* 3 keys बारी-बारी से try होंगी। अगर एक rate-limited हो जाए तो अगली पर try करेगा।
+     अगर तीनों rate-limited हो जाएं तो 5 सेकंड रुककर फिर से कोशिश करेगा।
+     तीन round (9 attempts) तक कोशिश करेगा। */
+  const maxRounds = 3;
+  const allKeys = GEMINI_KEYS.length;
+
+  for(let round=0; round<maxRounds; round++){
+    let allKeysFailed = true;
+
+    for(let k=0; k<allKeys; k++){
+      const key = getNextKey(); // round-robin — हर बार अगली key
+      const url = GEMINI_BASE + key;
+
+      try{
+        const res = await fetch(url, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify(body)
+        });
+
+        if(res.ok){
+          /* Success! */
+          const j = await res.json();
+          const txt = j.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(txt && txt.trim()){
+            return txt.trim();
+          }
+          if(j.promptFeedback?.blockReason){
+            throw new Error("AI इस सवाल का जवाब नहीं दे सका। कृपया दूसरे तरीके से पूछें।");
+          }
+          throw new Error("खाली जवाब — फिर कोशिश करें।");
+        }
+
+        /* Error response */
+        const errTxt = await res.text().catch(()=>"");
+        let errMsg = "";
+        try{ const j=JSON.parse(errTxt); errMsg = j.error?.message||""; }catch(e){ errMsg = errTxt; }
+
+        if(res.status===429){
+          /* Rate limited on this key — अगली key try करें */
+          console.log("Key "+(keyIndex%allKeys)+" rate limited, trying next...");
+          allKeysFailed = allKeysFailed; // still true
+          continue;
+        }
+
+        if(res.status===403){
+          throw new Error("API access denied — key में समस्या है।");
+        }
+        if(res.status>=500){
+          throw new Error("Google सर्वर में समस्या। कृपया थोड़ी देर बाद कोशिश करें।");
+        }
+
+        /* Other error — अगली key try करें */
+        continue;
+
+      }catch(e){
+        if(e.message && !e.message.includes("rate") && !e.message.includes("खाली")){
+          throw e; // genuine error, don't retry
+        }
+        continue; // try next key
+      }
+    }
+
+    /* अगर इस round में सभी keys rate-limited हो गईं */
+    if(round < maxRounds-1){
+      /* 5 सेकंड रुकें फिर फिर से कोशिश करें */
+      await new Promise(r=>setTimeout(r, 5000));
+    }
+  }
+
+  /* तीनों rounds के बाद भी नहीं हुआ */
+  throw new Error("अभी बहुत ज़्यादा सवाल पूछे जा रहे हैं। कृपया 1-2 मिनट रुककर फिर कोशिश करें।");
+}
+
+/* ===================== SEND ===================== */
+async function sendQuestion(){
+  if(state.busy) return;
+  const q = document.getElementById("qInput").value.trim();
+  if(!q) return;
+  if(!state.selectedClass || !state.selectedSubject){ showError("पहले कक्षा और विषय चुनें"); return; }
+
+  addMsg("user", q);
+  state.history.push({role:"user", content:q});
+  document.getElementById("qInput").value="";
+  autoGrow();
+  setBusy(true);
+
+  const tEl = addTypingIndicator();
+
+  try{
+    const ans = await callGemini(state.history);
+    tEl.remove();
+    const {bub} = addMsg("ai", ans);
+    state.history.push({role:"assistant", content:ans});
+    addAnswerActions(bub, ans);
+    saveCurrentChat();
+  }catch(e){
+    tEl.remove();
+    showError("अभी AI से जवाब नहीं मिल पा रहा है। कृपया थोड़ी देर बाद फिर कोशिश करें। ("+(e.message||"error")+")");
+    saveCurrentChat();
+  }finally{
+    setBusy(false);
+  }
+}
+
+function addTypingIndicator(){
+  const box=document.getElementById("chatBox");
+  const m=document.createElement("div");
+  m.className="msg ai";
+  m.innerHTML='<div class="av">🤖</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  box.appendChild(m);
+  box.scrollTop=box.scrollHeight;
+  return m;
+}
+
+function addAnswerActions(bubble, answerText){
+  const box=document.getElementById("chatBox");
+  const wrap=document.createElement("div");
+  wrap.className="actions";
+
+  const copyBtn=document.createElement("button");
+  copyBtn.className="act"; copyBtn.innerHTML="📋 Copy";
+  copyBtn.addEventListener("click", async ()=>{
+    try{
+      await navigator.clipboard.writeText(answerText);
+      copyBtn.innerHTML="✅ Copied";
+      setTimeout(()=>copyBtn.innerHTML="📋 Copy", 1500);
+    }catch(e){
+      const ta=document.createElement("textarea");
+      ta.value=answerText; document.body.appendChild(ta); ta.select();
+      try{document.execCommand("copy"); copyBtn.innerHTML="✅ Copied"; setTimeout(()=>copyBtn.innerHTML="📋 Copy",1500);}catch(_){}
+      document.body.removeChild(ta);
+    }
+  });
+
+  const regenBtn=document.createElement("button");
+  regenBtn.className="act"; regenBtn.innerHTML="🔄 फिर से जवाब दें";
+  regenBtn.addEventListener("click", ()=>regenerate(bubble, wrap));
+
+  const easyBtn=document.createElement("button");
+  easyBtn.className="act"; easyBtn.innerHTML="🤔 आसान भाषा में समझाएँ";
+  easyBtn.addEventListener("click", ()=>explainEasy(bubble));
+
+  wrap.appendChild(copyBtn); wrap.appendChild(regenBtn); wrap.appendChild(easyBtn);
+
+  /* ===== 🔊 Voice Output: AI जवाब सुनें ===== */
+  const listenBtn=document.createElement("button");
+  listenBtn.className="act";
+  listenBtn.innerHTML="🔊 सुनें";
+  let speaking=false;
+  listenBtn.addEventListener("click", ()=>{
+    if(speaking){
+      window.speechSynthesis.cancel();
+      speaking=false;
+      listenBtn.innerHTML="🔊 सुनें";
+      return;
+    }
+    /* HTML tags हटाकर plain text बनाओ */
+    const tmp=document.createElement("div");
+    tmp.innerHTML=answerText;
+    const plainText=tmp.textContent||tmp.innerText||"";
+    if(!plainText.trim()){ return; }
+    const utter=new SpeechSynthesisUtterance(plainText);
+    /* भाषा detect करो — Hindi या English */
+    const hasDevanagari=/[\u0900-\u097F]/.test(plainText);
+    utter.lang = hasDevanagari ? "hi-IN" : "en-IN";
+    utter.rate=0.95;
+    utter.pitch=1;
+    utter.onstart=()=>{ speaking=true; listenBtn.innerHTML="⏸ रोकें"; };
+    utter.onend=()=>{ speaking=false; listenBtn.innerHTML="🔊 सुनें"; };
+    utter.onerror=()=>{ speaking=false; listenBtn.innerHTML="🔊 सुनें"; };
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  });
+  wrap.appendChild(listenBtn);
+
+  box.appendChild(wrap);
+  box.scrollTop=box.scrollHeight;
+}
+
+async function regenerate(bubble, actionsWrap){
+  if(state.busy) return;
+  if(state.history[state.history.length-1]?.role==="assistant"){
+    state.history.pop();
+  }
+  actionsWrap.remove();
+  bubble.parentElement.remove();
+  setBusy(true);
+  const tEl=addTypingIndicator();
+  try{
+    const ans=await callGemini(state.history);
+    tEl.remove();
+    const {bub}=addMsg("ai",ans);
+    state.history.push({role:"assistant",content:ans});
+    addAnswerActions(bub,ans);
+  }catch(e){
+    tEl.remove();
+    showError("अभी AI से जवाब नहीं मिल पा रहा है। कृपया थोड़ी देर बाद फिर कोशिश करें। ("+(e.message||"error")+")");
+  }finally{
+    setBusy(false);
+  }
+}
+
+async function explainEasy(bubble){
+  if(state.busy) return;
+  const lastAns = state.history[state.history.length-1];
+  if(!lastAns || lastAns.role!=="assistant") return;
+  const req = "इस जवाब को और भी आसान और simple भाषा में, छोटे बच्चों को समझाने वाले तरीके से explain करो। बहुत simple शब्द use करो।";
+  addMsg("user", req);
+  state.history.push({role:"user",content:req});
+  setBusy(true);
+  const tEl=addTypingIndicator();
+  try{
+    const ans=await callGemini(state.history);
+    tEl.remove();
+    const {bub}=addMsg("ai",ans);
+    state.history.push({role:"assistant",content:ans});
+    addAnswerActions(bub,ans);
+  }catch(e){
+    tEl.remove();
+    showError("अभी AI से जवाब नहीं मिल पा रहा है। ("+(e.message||"error")+")");
+  }finally{
+    setBusy(false);
+  }
+}
+
+function newChat(){
+  state.history=[];
+  state.currentChatId=null;
+  document.getElementById("chatBox").innerHTML="";
+  document.getElementById("qInput").value="";
+  autoGrow();
+  renderSidebar();
+  if(state.selectedClass && state.selectedSubject){
+    document.getElementById("qInput").focus();
+  }
+}
+
+/* ===================== BOOT ===================== */
+document.addEventListener("DOMContentLoaded", init);
+
+/* ===================== MIND MAP GENERATOR ===================== */
+const MM_COLORS=["#1f8f43","#ea580c","#2563eb","#7c3aed","#db2777","#0891b2","#ca8a04","#dc2626"];
+
+function initMindMap(){
+  const promptInput=document.getElementById("mmPrompt");
+  const genBtn=document.getElementById("mmGenBtn");
+  const status=document.getElementById("mmStatus");
+  const result=document.getElementById("mmResult");
+  const canvas=document.getElementById("mmCanvas");
+  const errorBox=document.getElementById("mmError");
+  const downloadBtn=document.getElementById("mmDownloadBtn");
+  const regenBtn=document.getElementById("mmRegenBtn");
+
+  async function generateMindMap(){
+    const topic=promptInput.value.trim();
+    if(!topic){
+      errorBox.style.display="block";
+      errorBox.textContent="⚠️ कृपया पहले टॉपिक लिखें।";
+      setTimeout(()=>errorBox.style.display="none",3000);
+      return;
+    }
+
+    genBtn.disabled=true;
+    status.style.display="flex";
+    result.style.display="none";
+    errorBox.style.display="none";
+
+    try{
+      /* Gemini AI ko mind map JSON generate karne ke liye prompt */
+      const mmPrompt=`तुम एक mind map generator हो। टॉपिक "${topic}" के लिए एक mind map बनाओ।
+
+कड़ाई से यह JSON format में जवाब दो (सिर्फ JSON, कोई और text नहीं):
+{
+  "topic": "${topic}",
+  "branches": [
+    {
+      "title": "शाखा का नाम",
+      "children": ["बिंदु 1", "बिंदु 2", "बिंदु 3"]
+    },
+    {
+      "title": "दूसरी शाखा",
+      "children": ["बिंदु 1", "बिंदु 2"]
+    }
+  ]
+}
+
+नियम:
+- कम से कम 4 branches, ज्यादा से ज्यादा 6 branches
+- हर branch में 2-4 children
+- जवाब student की भाषा में दो (अगर topic हिंदी में है तो हिंदी में, अंग्रेजी में है तो अंग्रेजी में)
+- सिर्फ JSON दो, कोई markdown code block नहीं, कोई explanation नहीं`;
+
+      const mmMessages=[{role:"user",content:mmPrompt}];
+      const response=await callGeminiRaw(mmPrompt);
+
+      /* JSON parse karo */
+      let jsonText=response.trim();
+      /* Remove markdown code blocks agar AI ne diye */
+      jsonText=jsonText.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+      const mmData=JSON.parse(jsonText);
+
+      /* Mind map render karo */
+      renderMindMap(canvas,mmData);
+      /* localStorage mein save karo taaki refresh/close pe na gayab ho */
+      try{
+        localStorage.setItem("gc_mindmap_data", JSON.stringify({topic:topic, data:mmData}));
+      }catch(e){}
+      status.style.display="none";
+      result.style.display="block";
+    }catch(e){
+      status.style.display="none";
+      errorBox.style.display="block";
+      errorBox.textContent="❌ माइंड मैप बन नहीं पाया। कृपया थोड़ी देर बाद फिर कोशिश करें। ("+(e.message||"error")+")";
+    }finally{
+      genBtn.disabled=false;
+    }
+  }
+
+  genBtn.addEventListener("click", generateMindMap);
+  promptInput.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter"){ e.preventDefault(); generateMindMap(); }
+  });
+  regenBtn.addEventListener("click", generateMindMap);
+
+  /* Clear button — saved mind map hatao */
+  const clearBtn=document.getElementById("mmClearBtn");
+  if(clearBtn){
+    clearBtn.addEventListener("click",()=>{
+      try{localStorage.removeItem("gc_mindmap_data");}catch(e){}
+      window._lastMMData=null;
+      canvas.innerHTML="";
+      result.style.display="none";
+      promptInput.value="";
+      promptInput.focus();
+    });
+  }
+
+  /* ===== Restore saved mind map from localStorage ===== */
+  try{
+    const saved=localStorage.getItem("gc_mindmap_data");
+    if(saved){
+      const parsed=JSON.parse(saved);
+      if(parsed.data){
+        renderMindMap(canvas, parsed.data);
+        if(parsed.topic){ promptInput.value=parsed.topic; }
+        result.style.display="block";
+      }
+    }
+  }catch(e){}
+
+  downloadBtn.addEventListener("click", ()=>{
+    /* Canvas se image banakar download karo */
+    const mmCanvas=document.getElementById("mmCanvas");
+    /* html2canvas nahi hai, toh text-based download karo as screenshot alternative */
+    /* SVG approach: mind map ko SVG mein convert karke download */
+    const svgEl=createMindMapSVG();
+    if(!svgEl) return;
+    const svgData=new XMLSerializer().serializeToString(svgEl);
+    const blob=new Blob([svgData],{type:"image/svg+xml"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="mindmap-"+Date.now()+".svg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+}
+
+/* Gemini raw call — mind map ke liye (chat history ke bina) */
+async function callGeminiRaw(promptText){
+  const sysText="तुम एक mind map generator हो। सिर्फ JSON format में जवाब दो।";
+  const body={
+    contents:[{role:"user",parts:[{text:promptText}]}],
+    systemInstruction:{parts:[{text:sysText}]},
+    generationConfig:{temperature:0.7,maxOutputTokens:4000}
+  };
+
+  const maxRounds=3;
+  const allKeys=GEMINI_KEYS.length;
+
+  for(let round=0;round<maxRounds;round++){
+    for(let k=0;k<allKeys;k++){
+      const key=getNextKey();
+      const url=GEMINI_BASE+key;
+      try{
+        const res=await fetch(url,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(body)
+        });
+        if(res.ok){
+          const j=await res.json();
+          const txt=j.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(txt&&txt.trim()) return txt.trim();
+          throw new Error("खाली जवाब");
+        }
+      }catch(e){}
+    }
+    if(round<maxRounds-1) await new Promise(r=>setTimeout(r,3000));
+  }
+  throw new Error("AI से जवाब नहीं मिला");
+}
+
+/* Dedicated function for Quiz — higher token limit + correct system instruction */
+async function callGeminiQuiz(promptText){
+  const sysText="तुम एक quiz generator हो। सिर्फ valid JSON format में जवाब दो। कोई markdown नहीं, कोई extra text नहीं।";
+  const body={
+    contents:[{role:"user",parts:[{text:promptText}]}],
+    systemInstruction:{parts:[{text:sysText}]},
+    generationConfig:{temperature:0.5,maxOutputTokens:8192}
+  };
+
+  const maxRounds=3;
+  const allKeys=GEMINI_KEYS.length;
+
+  for(let round=0;round<maxRounds;round++){
+    for(let k=0;k<allKeys;k++){
+      const key=getNextKey();
+      const url=GEMINI_BASE+key;
+      try{
+        const res=await fetch(url,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(body)
+        });
+        if(res.ok){
+          const j=await res.json();
+          const txt=j.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(txt&&txt.trim()) return txt.trim();
+          throw new Error("खाली जवाब");
+        }
+      }catch(e){}
+    }
+    if(round<maxRounds-1) await new Promise(r=>setTimeout(r,3000));
+  }
+  throw new Error("AI से जवाब नहीं मिला");
+}
+
+  /* Mind map render karo HTML/CSS mein */
+function renderMindMap(container,data){
+  window._lastMMData=data; /* download ke liye save */
+  container.innerHTML="";
+  const tree=document.createElement("div");
+  tree.className="mm-tree";
+
+  /* Root node */
+  const root=document.createElement("div");
+  root.className="mm-root";
+  root.textContent=data.topic||"Topic";
+  tree.appendChild(root);
+
+  /* Branches */
+  if(data.branches && data.branches.length){
+    const branches=document.createElement("div");
+    branches.className="mm-branches";
+
+    data.branches.forEach((branch,i)=>{
+      const color=MM_COLORS[i%MM_COLORS.length];
+      const branchEl=document.createElement("div");
+      branchEl.className="mm-branch";
+
+      /* Connecting line */
+      const line=document.createElement("div");
+      line.className="mm-branch-line";
+      line.style.background=color;
+      branchEl.appendChild(line);
+
+      /* Branch title */
+      const title=document.createElement("div");
+      title.className="mm-branch-title";
+      title.textContent=branch.title||"";
+      title.style.background=color;
+      branchEl.appendChild(title);
+
+      /* Children */
+      if(branch.children && branch.children.length){
+        const children=document.createElement("div");
+        children.className="mm-branch-children";
+        branch.children.forEach(child=>{
+          const childEl=document.createElement("div");
+          childEl.className="mm-child";
+          childEl.textContent=child;
+          children.appendChild(childEl);
+        });
+        branchEl.appendChild(children);
+      }
+
+      branches.appendChild(branchEl);
+    });
+
+    tree.appendChild(branches);
+  }
+
+  container.appendChild(tree);
+}
+
+/* Mind map ko SVG mein convert karo (download ke liye) */
+function createMindMapSVG(){
+  const data=window._lastMMData;
+  if(!data) return null;
+  /* Simple text-based SVG export */
+  const w=900, h=600;
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+  svg+=`<rect width="${w}" height="${h}" fill="#f4faf6"/>`;
+  /* Root */
+  svg+=`<rect x="${w/2-100}" y="20" width="200" height="40" rx="12" fill="#1f8f43"/>`;
+  svg+=`<text x="${w/2}" y="45" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="sans-serif">${escapeXml(data.topic||"Topic")}</text>`;
+  let y=90;
+  if(data.branches){
+    data.branches.forEach((b,i)=>{
+      const color=MM_COLORS[i%MM_COLORS.length];
+      svg+=`<line x1="${w/2}" y1="60" x2="40" y2="${y}" stroke="${color}" stroke-width="2"/>`;
+      svg+=`<rect x="20" y="${y}" width="180" height="32" rx="8" fill="${color}"/>`;
+      svg+=`<text x="110" y="${y+21}" text-anchor="middle" fill="white" font-size="13" font-weight="bold" font-family="sans-serif">${escapeXml(b.title||"")}</text>`;
+      y+=42;
+      if(b.children){
+        b.children.forEach(c=>{
+          svg+=`<text x="220" y="${y}" fill="#0f172a" font-size="12" font-family="sans-serif">• ${escapeXml(c)}</text>`;
+          y+=20;
+        });
+      }
+      y+=10;
+    });
+  }
+  svg+="</svg>";
+  const parser=new DOMParser();
+  return parser.parseFromString(svg,"image/svg+xml").documentElement;
+}
+
+function escapeXml(s){var r=String(s);r=r.split(String.fromCharCode(38)).join(String.fromCharCode(38)+"amp;");r=r.split(String.fromCharCode(60)).join(String.fromCharCode(60)+"lt;");r=r.split(String.fromCharCode(62)).join(String.fromCharCode(62)+"gt;");return r;}
+
+/* ===================== NOTES GENERATOR (Handwritten Style) ===================== */
+function initNotesGenerator(){
+  const promptInput=document.getElementById("notesPrompt");
+  const genBtn=document.getElementById("notesGenBtn");
+  const status=document.getElementById("notesStatus");
+  const result=document.getElementById("notesResult");
+  const notebook=document.getElementById("notebookPage");
+  const errorBox=document.getElementById("notesError");
+  const downloadBtn=document.getElementById("notesDownloadBtn");
+  const regenBtn=document.getElementById("notesRegenBtn");
+  const listenBtn=document.getElementById("notesListenBtn");
+  let lastNotesText="";
+
+  async function generateNotes(){
+    const topic=promptInput.value.trim();
+    if(!topic){
+      errorBox.style.display="block";
+      errorBox.textContent="⚠️ कृपया पहले chapter का नाम लिखें।";
+      setTimeout(()=>errorBox.style.display="none",3000);
+      return;
+    }
+
+    genBtn.disabled=true;
+    status.style.display="flex";
+    result.style.display="none";
+    errorBox.style.display="none";
+
+    try{
+      const cls=state.selectedClass||"";
+      const subj=state.selectedSubject||"";
+      const notesPrompt='तुम एक शिक्षक हो जो Bihar Board (BSEB) के students के लिए notes लिखता है। टॉपिक "'+topic+'" के लिए complete notes बनाओ। Class: '+cls+', Subject: '+subj+'।\n\nनियम:\n1. जवाब student की भाषा में दो (हिंदी में लिखा तो हिंदी, अंग्रेजी में तो अंग्रेजी)\n2. बहुत लंबा मत बनाओ — exam-oriented रखो\n3. सिर्फ plain text में लिखो, कोई HTML नहीं\n\nनोट्स में ये sections ज़रूर हों:\n\n## सारांश\n(Chapter का short summary, 3-4 lines)\n\n## मुख्य बिंदु\n- Point 1\n- Point 2\n- Point 3\n(कम से कम 5 important points)\n\n## परिभाषाएँ\n- Term 1: परिभाषा\n- Term 2: परिभाषा\n(important terms की परिभाषाएँ)\n\n## महत्वपूर्ण तथ्य/तिथियाँ\n- Fact 1\n- Fact 2\n(important dates, events, या facts — अगर applicable हो)\n\n## परीक्षा के प्रश्न\n1. प्रश्न 1?\n2. प्रश्न 2?\n3. प्रश्न 3?\n(कम से कम 3 important questions)\n\n## त्वरित समीक्षा\n- Quick revision points (1-2 lines में पूरा chapter)';
+
+      const response=await callGeminiRaw(notesPrompt);
+
+      /* Render notes in handwritten notebook style */
+      renderNotes(notebook, topic, response);
+      lastNotesText=response;
+      status.style.display="none";
+      result.style.display="block";
+    }catch(e){
+      status.style.display="none";
+      errorBox.style.display="block";
+      errorBox.textContent="❌ नोट्स बन नहीं पाए। कृपया थोड़ी देर बाद फिर कोशिश करें। ("+(e.message||"error")+")";
+    }finally{
+      genBtn.disabled=false;
+    }
+  }
+
+  genBtn.addEventListener("click", generateNotes);
+  promptInput.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter"){ e.preventDefault(); generateNotes(); }
+  });
+  regenBtn.addEventListener("click", generateNotes);
+
+  /* Download as text file */
+  downloadBtn.addEventListener("click", ()=>{
+    if(!lastNotesText) return;
+    const topic=promptInput.value.trim()||"notes";
+    const header="=== ज्ञान चौपाल — AI Notes ===\nTopic: "+topic+"\nDate: "+new Date().toLocaleDateString("hi-IN")+"\n\n";
+    const blob=new Blob([header+lastNotesText],{type:"text/plain;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="notes-"+topic.replace(/[^a-zA-Z0-9\u0900-\u097F]/g,"_")+"-"+Date.now()+".txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  /* Voice — notes sunne ke liye */
+  let speaking=false;
+  listenBtn.addEventListener("click", ()=>{
+    if(speaking){
+      window.speechSynthesis.cancel();
+      speaking=false;
+      listenBtn.innerHTML="🔊 सुनें";
+      return;
+    }
+    const plainText=lastNotesText.replace(/[#*\-→]/g," ").trim();
+    if(!plainText) return;
+    const utter=new SpeechSynthesisUtterance(plainText);
+    const hasDevanagari=/[\u0900-\u097F]/.test(plainText);
+    utter.lang=hasDevanagari?"hi-IN":"en-IN";
+    utter.rate=0.9;
+    utter.pitch=1;
+    utter.onstart=()=>{ speaking=true; listenBtn.innerHTML="⏸ रोकें"; };
+    utter.onend=()=>{ speaking=false; listenBtn.innerHTML="🔊 सुनें"; };
+    utter.onerror=()=>{ speaking=false; listenBtn.innerHTML="🔊 सुनें"; };
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  });
+}
+
+/* Render notes in handwritten notebook style */
+function renderNotes(container, topic, text){
+  container.innerHTML="";
+  const page=document.createElement("div");
+
+  /* Title */
+  const title=document.createElement("div");
+  title.className="nb-title";
+  title.textContent=topic;
+  page.appendChild(title);
+
+  /* Date */
+  const dateEl=document.createElement("div");
+  dateEl.className="nb-date";
+  dateEl.textContent="📅 "+new Date().toLocaleDateString("hi-IN",{day:"numeric",month:"long",year:"numeric"});
+  page.appendChild(dateEl);
+
+  /* Parse sections (## headers) */
+  const lines=text.split("\n");
+  let currentSection=null;
+  let sectionContent=[];
+
+  function flushSection(){
+    if(!currentSection){
+      /* Content before first section */
+      sectionContent.forEach(line=>{
+        if(line.trim()){
+          const p=document.createElement("div");
+          p.className="nb-content";
+          p.textContent=line.trim();
+          page.appendChild(p);
+        }
+      });
+      return;
+    }
+    const section=document.createElement("div");
+    section.className="nb-section";
+    section.textContent=currentSection;
+    page.appendChild(section);
+
+    sectionContent.forEach(line=>{
+      const trimmed=line.trim();
+      if(!trimmed) return;
+      /* Bullet points */
+      if(trimmed.startsWith("- ")||trimmed.startsWith("• ")){
+        const b=document.createElement("div");
+        b.className="nb-bullet";
+        b.textContent=trimmed.substring(2);
+        page.appendChild(b);
+      }
+      /* Numbered questions */
+      else if(/^\d+[.)]\s/.test(trimmed)){
+        const b=document.createElement("div");
+        b.className="nb-bullet";
+        b.textContent=trimmed;
+        page.appendChild(b);
+      }
+      /* Definition with colon */
+      else if(trimmed.includes(":")&&!trimmed.startsWith("http")){
+        const colonIdx=trimmed.indexOf(":");
+        const term=trimmed.substring(0,colonIdx);
+        const def=trimmed.substring(colonIdx+1).trim();
+        const d=document.createElement("div");
+        d.className="nb-def";
+        d.innerHTML="<strong>"+escapeHtml(term)+"</strong>: "+escapeHtml(def);
+        page.appendChild(d);
+      }
+      else{
+        const p=document.createElement("div");
+        p.className="nb-content";
+        p.textContent=trimmed;
+        page.appendChild(p);
+      }
+    });
+  }
+
+  lines.forEach(line=>{
+    if(line.startsWith("## ")){
+      flushSection();
+      currentSection=line.substring(3).trim();
+      sectionContent=[];
+    }else{
+      sectionContent.push(line);
+    }
+  });
+  flushSection();
+
+  container.appendChild(page);
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&").replace(/</g,"<").replace(/>/g,">");
+}
+
+/* ===================== FORMULA BOOK ===================== */
+function initFormulaBook(){
+  const genBtn=document.getElementById("fbGenBtn");
+  const status=document.getElementById("fbStatus");
+  const result=document.getElementById("fbResult");
+  const page=document.getElementById("formulaPage");
+  const errorBox=document.getElementById("fbError");
+
+  async function generateFormulas(){
+    const cls=document.getElementById("fbClass").value.trim();
+    const subj=document.getElementById("fbSubject").value.trim();
+    const chapter=document.getElementById("fbChapter").value.trim();
+
+    if(!cls||!subj||!chapter){
+      errorBox.style.display="block";
+      errorBox.textContent="⚠️ कृपया Class, Subject और Chapter तीनों भरें।";
+      setTimeout(()=>errorBox.style.display="none",3000);
+      return;
+    }
+
+    genBtn.disabled=true;
+    status.style.display="flex";
+    result.style.display="none";
+    errorBox.style.display="none";
+
+    try{
+      const promptText="तुम एक शिक्षक हो। Class "+cls+" के "+subj+" विषय के chapter \""+chapter+"\" के सभी important formulas निकालो।\n\nनियम:\n1. सिर्फ plain text में लिखो, कोई HTML नहीं\n2. हर formula के साथ उसका नाम और short description भी दो\n3. जवाब student की भाषा में दो (हिंदी में लिखा तो हिंदी, अंग्रेजी में तो अंग्रेजी)\n4. Format यह रखो:\n\n## Section Name\nFormula: [formula here]\nDescription: [short description]\nFormula: [next formula]\nDescription: [description]\n\nकम से कम 5-10 formulas दो।";
+
+      const response=await callGeminiRaw(promptText);
+      renderFormulas(page, cls, subj, chapter, response);
+      status.style.display="none";
+      result.style.display="block";
+    }catch(e){
+      status.style.display="none";
+      errorBox.style.display="block";
+      errorBox.textContent="❌ फॉर्मूले नहीं मिले। कृपया थोड़ी देर बाद कोशिश करें। ("+(e.message||"error")+")";
+    }finally{
+      genBtn.disabled=false;
+    }
+  }
+
+  genBtn.addEventListener("click", generateFormulas);
+}
+
+function renderFormulas(container, cls, subj, chapter, text){
+  container.innerHTML="";
+  const title=document.createElement("div");
+  title.className="fb-title";
+  title.textContent="Class "+cls+" • "+subj+" • "+chapter;
+  container.appendChild(title);
+
+  const lines=text.split("\n");
+  lines.forEach(line=>{
+    const trimmed=line.trim();
+    if(!trimmed) return;
+    if(trimmed.startsWith("## ")){
+      const sec=document.createElement("div");
+      sec.className="fb-section";
+      sec.textContent=trimmed.substring(3);
+      container.appendChild(sec);
+    }else if(trimmed.toLowerCase().startsWith("formula:")){
+      const f=document.createElement("div");
+      f.className="fb-formula";
+      f.textContent=trimmed.substring(8).trim();
+      container.appendChild(f);
+    }else if(trimmed.toLowerCase().startsWith("description:")){
+      const d=document.createElement("div");
+      d.className="fb-desc";
+      d.textContent=trimmed.substring(11).trim();
+      container.appendChild(d);
+    }else if(trimmed.startsWith("- ")||trimmed.startsWith("• ")){
+      const d=document.createElement("div");
+      d.className="fb-formula";
+      d.textContent=trimmed.substring(2);
+      container.appendChild(d);
+    }else{
+      const d=document.createElement("div");
+      d.className="fb-desc";
+      d.textContent=trimmed;
+      container.appendChild(d);
+    }
+  });
+}
+
+/* ===================== MCQ QUIZ GENERATOR ===================== */
+function initQuizGenerator(){
+  const genBtn=document.getElementById("quizGenBtn");
+  const status=document.getElementById("quizStatus");
+  const result=document.getElementById("quizResult");
+  const header=document.getElementById("quizHeader");
+  const questionsEl=document.getElementById("quizQuestions");
+  const actionsEl=document.getElementById("quizActions");
+  const scoreEl=document.getElementById("quizScore");
+  const submitBtn=document.getElementById("quizSubmitBtn");
+  const errorBox=document.getElementById("quizError");
+  let quizData=null;
+  let userAnswers={};
+
+  async function generateQuiz(){
+    const cls=document.getElementById("quizClass").value.trim();
+    const subj=document.getElementById("quizSubject").value.trim();
+    const topic=document.getElementById("quizTopic").value.trim();
+
+    if(!cls||!subj||!topic){
+      errorBox.style.display="block";
+      errorBox.textContent="⚠️ कृपया Class, Subject और Topic तीनों भरें।";
+      setTimeout(()=>errorBox.style.display="none",3000);
+      return;
+    }
+
+    genBtn.disabled=true;
+    status.style.display="flex";
+    result.style.display="none";
+    errorBox.style.display="none";
+    userAnswers={};
+
+    try{
+      const promptText="तुम एक शिक्षक हो। Class "+cls+" के "+subj+" विषय के topic \""+topic+"\" पर 20 objective questions (MCQ) बनाओ।\n\nकड़ाई से यह JSON format में जवाब दो (सिर्फ JSON, कोई और text नहीं):\n{\n  \"questions\": [\n    {\n      \"question\": \"सवाल यहाँ\",\n      \"options\": [\"विकल्प A\", \"विकल्प B\", \"विकल्प C\", \"विकल्प D\"],\n      \"answer\": 0\n    }\n  ]\n}\n\nनियम:\n1. ठीक 20 questions बनाओ\n2. हर question के 4 options दो\n3. \"answer\" में सही option का index दो (0, 1, 2, या 3)\n4. जवाब student की भाषा में दो (हिंदी में लिखा तो हिंदी, अंग्रेजी में तो अंग्रेजी)\n5. सिर्फ JSON दो, कोई markdown code block नहीं, कोई explanation नहीं";
+
+      const response=await callGeminiQuiz(promptText);
+      /* Clean response — remove markdown code blocks if present */
+      let jsonText=response.trim().replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+      /* Try to extract JSON object if there's extra text */
+      const jsonStart=jsonText.indexOf("{");
+      const jsonEnd=jsonText.lastIndexOf("}");
+      if(jsonStart>=0 && jsonEnd>jsonStart){
+        jsonText=jsonText.substring(jsonStart,jsonEnd+1);
+      }
+      quizData=JSON.parse(jsonText);
+
+      /* Validate quiz data */
+      if(!quizData||!quizData.questions||!Array.isArray(quizData.questions)||quizData.questions.length===0){
+        throw new Error("क्विज़ डेटा खाली है");
+      }
+
+      /* Header */
+      header.innerHTML="✅ Class "+cls+" • "+subj+" • "+topic+"<br>कुल "+quizData.questions.length+" प्रश्न";
+
+      /* Questions */
+      questionsEl.innerHTML="";
+      quizData.questions.forEach((q,i)=>{
+        const qEl=document.createElement("div");
+        qEl.className="quiz-q";
+        const num=document.createElement("div");
+        num.className="quiz-q-num";
+        num.textContent="प्रश्न "+(i+1);
+        qEl.appendChild(num);
+
+        const text2=document.createElement("div");
+        text2.className="quiz-q-text";
+        text2.textContent=q.question;
+        qEl.appendChild(text2);
+
+        q.options.forEach((opt,j)=>{
+          const optEl=document.createElement("div");
+          optEl.className="quiz-opt";
+          optEl.textContent=String.fromCharCode(65+j)+". "+opt;
+          optEl.dataset.qidx=i;
+          optEl.dataset.oidx=j;
+          optEl.addEventListener("click",()=>{
+            /* Deselect previous selection in this question */
+            qEl.querySelectorAll(".quiz-opt").forEach(o=>o.classList.remove("selected"));
+            optEl.classList.add("selected");
+            userAnswers[i]=j;
+          });
+          qEl.appendChild(optEl);
+        });
+
+        questionsEl.appendChild(qEl);
+      });
+
+      actionsEl.style.display="flex";
+      scoreEl.style.display="none";
+      status.style.display="none";
+      result.style.display="block";
+    }catch(e){
+      status.style.display="none";
+      errorBox.style.display="block";
+      errorBox.textContent="❌ क्विज़ बन नहीं पाया। कृपया थोड़ी देर बाद कोशिश करें। ("+(e.message||"error")+")";
+    }finally{
+      genBtn.disabled=false;
+    }
+  }
+
+  genBtn.addEventListener("click", generateQuiz);
+
+  submitBtn.addEventListener("click", ()=>{
+    if(!quizData) return;
+    let correct=0;
+    let total=quizData.questions.length;
+    let answered=0;
+
+    quizData.questions.forEach((q,i)=>{
+      const opts=document.querySelectorAll('.quiz-opt[data-qidx="'+i+'"]');
+      opts.forEach(o=>{
+        o.classList.remove("correct","wrong");
+        const oidx=parseInt(o.dataset.oidx);
+        if(oidx===q.answer){
+          o.classList.add("correct");
+        }
+        if(userAnswers[i]===oidx && oidx!==q.answer){
+          o.classList.add("wrong");
+        }
+      });
+      if(userAnswers[i]!==undefined){
+        answered++;
+        if(userAnswers[i]===q.answer) correct++;
+      }
+    });
+
+    const pct=total>0?Math.round((correct/total)*100):0;
+    const passed=pct>=40;
+    scoreEl.className="quiz-score "+(passed?"pass":"fail");
+    scoreEl.style.display="block";
+    scoreEl.innerHTML="📊 आपका रिजल्ट<br><br>"+
+      "✅ सही: "+correct+"<br>"+
+      "❌ गलत: "+(answered-correct)+"<br>"+
+      "⏭ छूटे: "+(total-answered)+"<br><br>"+
+      "कुल अंक: "+correct+"/"+total+" ("+pct+"%)<br>"+
+      (passed?"🎉 बधाई हो! पास!":"💪 और मेहनत करो!");
+    
+    scoreEl.scrollIntoView({behavior:"smooth",block:"center"});
+  });
+}
+
+</script>
+</body>
+</html>
